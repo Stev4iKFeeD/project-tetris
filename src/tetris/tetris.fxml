@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.stage.*?>
+
+<Stage resizable="false" title="Tetris" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tetris.Controller">
+    <scene>
+        <Scene>
+         <BorderPane prefHeight="740.0" prefWidth="670.0" />
+        </Scene>
+    </scene>
+</Stage>
