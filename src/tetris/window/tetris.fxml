@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.Scene?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -9,49 +8,47 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.stage.Stage?>
 
-<Stage resizable="false" title="Tetris" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tetris.window.Controller">
+<Stage fx:id="stage" resizable="false" title="Tetris" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tetris.window.Controller">
     <scene>
         <Scene>
          <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="670.0" style="-fx-background-image: url(/assets/bg.png);">
-            <center>
-               <StackPane BorderPane.alignment="CENTER">
+            <right>
+               <Pane BorderPane.alignment="CENTER">
                   <children>
-                     <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="721.0" prefWidth="361.0" StackPane.alignment="CENTER_LEFT">
-                        <StackPane.margin>
-                           <Insets left="10.0" />
-                        </StackPane.margin>
+                     <ImageView fitHeight="261.0" fitWidth="224.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@../../assets/next_stroke.png" />
+                        </image>
+                     </ImageView>
+                     <ImageView fitHeight="284.0" fitWidth="224.0" layoutY="456.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@../../assets/score_stroke.png" />
+                        </image>
+                     </ImageView>
+                     <StackPane layoutX="10.0" layoutY="120.0" prefHeight="130.0" prefWidth="204.0">
                         <children>
-                           <ImageView fitHeight="721.0" fitWidth="361.0" pickOnBounds="true" preserveRatio="true">
-                              <image>
-                                 <Image url="@../../assets/gf_grid.png" />
-                              </image>
-                           </ImageView>
-                        </children>
-                     </Pane>
-                     <ImageView fitHeight="740.0" fitWidth="381.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+                           <Pane fx:id="nextMinoPane" />
+                        </children></StackPane>
+                  </children>
+               </Pane>
+            </right>
+            <center>
+               <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="TOP_LEFT">
+                  <children>
+                     <ImageView fitHeight="721.0" fitWidth="361.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@../../assets/gf_grid.png" />
+                        </image>
+                     </ImageView>
+                     <Pane fx:id="gamePane" layoutX="10.0" layoutY="10.0" prefHeight="720.0" prefWidth="361.0" />
+                     <ImageView fitHeight="740.0" fitWidth="381.0" pickOnBounds="true" preserveRatio="true">
                         <image>
                            <Image url="@../../assets/gf_stroke.png" />
                         </image>
                      </ImageView>
                   </children>
-               </StackPane>
-            </center>
-            <right>
-               <StackPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="740.0" prefWidth="224.0" BorderPane.alignment="CENTER_RIGHT">
-                  <children>
-                     <ImageView fitHeight="261.0" fitWidth="224.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_RIGHT">
-                        <image>
-                           <Image url="@../../assets/next_stroke.png" />
-                        </image>
-                     </ImageView>
-                     <ImageView fitHeight="284.0" fitWidth="224.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_RIGHT">
-                        <image>
-                           <Image url="@../../assets/score_stroke.png" />
-                        </image>
-                     </ImageView>
-                  </children>
-               </StackPane>
-            </right></BorderPane>
+               </Pane>
+            </center></BorderPane>
         </Scene>
     </scene>
 </Stage>
