@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Shape {
-    private static final String[] MINO_NAMES = {"I", "J", "L", "O", "S", "T", "Z"};
+    private static final String[] MINOS = {"I", "J", "L", "O", "S", "T", "Z"};
 
     protected ImageView a;
     protected ImageView b;
@@ -13,22 +13,16 @@ public class Shape {
 
     private int rotationState = 0;
 
-//    public final ShapeType TYPE;
     public final int MINO_INDEX;
     public final int SIZE = 36;
 
-//    public enum ShapeType {
-//        I, J, L, O, S, T, Z
-//    }
 
     /**
      * @param minoIndex 0 - I; 1 - J; 2 - L; 3 - O; 4 - S; 5 - T; 6 - Z
      */
     public Shape(int minoIndex) {
         this.MINO_INDEX = minoIndex;
-//        this.TYPE = type;
-//        Image minoImage = new Image("assets/minos/mino_" + type + ".png");
-        Image minoImage = new Image("assets/minos/mino_" + MINO_NAMES[minoIndex] + ".png");
+        Image minoImage = new Image("assets/minos/mino_" + MINOS[minoIndex] + ".png");
 
         a = new ImageView(minoImage);
         a.setFitWidth(SIZE);
@@ -43,14 +37,14 @@ public class Shape {
         d.setFitWidth(SIZE);
         d.setFitHeight(SIZE);
 
-        switch(MINO_INDEX) {
-            case 0:
+        switch(MINOS[MINO_INDEX]) {
+            case "I":
                 a.setX(SIZE);
                 b.setX(2 * SIZE);
                 c.setX(3 * SIZE);
                 d.setX(4 * SIZE);
                 break;
-            case 1:
+            case "J":
                 a.setX(SIZE);
                 b.setX(SIZE);
                 b.setY(SIZE);
@@ -59,7 +53,7 @@ public class Shape {
                 d.setX(3 * SIZE);
                 d.setY(SIZE);
                 break;
-            case 2:
+            case "L":
                 a.setX(SIZE);
                 a.setY(SIZE);
                 b.setX(2 * SIZE);
@@ -68,7 +62,7 @@ public class Shape {
                 c.setY(SIZE);
                 d.setX(3 * SIZE);
                 break;
-            case 3:
+            case "O":
                 a.setX(SIZE);
                 b.setX(2 * SIZE);
                 c.setX(SIZE);
@@ -76,7 +70,7 @@ public class Shape {
                 d.setX(2 * SIZE);
                 d.setY(SIZE);
                 break;
-            case 4:
+            case "S":
                 a.setX(SIZE);
                 a.setY(SIZE);
                 b.setX(2 * SIZE);
@@ -84,7 +78,7 @@ public class Shape {
                 c.setX(2 * SIZE);
                 d.setX(3 * SIZE);
                 break;
-            case 5:
+            case "T":
                 a.setX(2 * SIZE);
                 b.setX(SIZE);
                 b.setY(SIZE);
@@ -93,7 +87,7 @@ public class Shape {
                 d.setX(3 * SIZE);
                 d.setY(SIZE);
                 break;
-            case 6:
+            case "Z":
                 a.setX(SIZE);
                 b.setX(2 * SIZE);
                 c.setX(2 * SIZE);
@@ -105,14 +99,14 @@ public class Shape {
     }
 
     public void initPos() {
-        switch(MINO_INDEX) {
-            case 0:
+        switch(MINOS[MINO_INDEX]) {
+            case "I":
                 a.setX(3 * SIZE);
                 b.setX(4 * SIZE);
                 c.setX(5 * SIZE);
                 d.setX(6 * SIZE);
                 break;
-            case 1:
+            case "J":
                 a.setX(3 * SIZE);
                 b.setX(3 * SIZE);
                 b.setY(SIZE);
@@ -121,7 +115,7 @@ public class Shape {
                 d.setX(5 * SIZE);
                 d.setY(SIZE);
                 break;
-            case 2:
+            case "L":
                 a.setX(3 * SIZE);
                 a.setY(SIZE);
                 b.setX(4 * SIZE);
@@ -130,7 +124,7 @@ public class Shape {
                 c.setY(SIZE);
                 d.setX(5 * SIZE);
                 break;
-            case 3:
+            case "O":
                 a.setX(4 * SIZE);
                 b.setX(5 * SIZE);
                 c.setX(4 * SIZE);
@@ -138,7 +132,7 @@ public class Shape {
                 d.setX(5 * SIZE);
                 d.setY(SIZE);
                 break;
-            case 4:
+            case "S":
                 a.setX(3 * SIZE);
                 a.setY(SIZE);
                 b.setX(4 * SIZE);
@@ -146,7 +140,7 @@ public class Shape {
                 c.setX(4 * SIZE);
                 d.setX(5 * SIZE);
                 break;
-            case 5:
+            case "T":
                 a.setX(4 * SIZE);
                 b.setX(3 * SIZE);
                 b.setY(SIZE);
@@ -155,7 +149,7 @@ public class Shape {
                 d.setX(5 * SIZE);
                 d.setY(SIZE);
                 break;
-            case 6:
+            case "Z":
                 a.setX(3 * SIZE);
                 b.setX(4 * SIZE);
                 c.setX(4 * SIZE);
@@ -166,25 +160,18 @@ public class Shape {
         }
     }
 
-    public void moveDown() {
-        a.setY(a.getY() + SIZE);
-        b.setY(b.getY() + SIZE);
-        c.setY(c.getY() + SIZE);
-        d.setY(d.getY() + SIZE);
+    public void moveX(int offset){
+        a.setX(a.getX() + offset);
+        b.setX(b.getX() + offset);
+        c.setX(c.getX() + offset);
+        d.setX(d.getX() + offset);
     }
 
-    public void moveLeft() {
-        a.setX(a.getX() - SIZE);
-        b.setX(b.getX() - SIZE);
-        c.setX(c.getX() - SIZE);
-        d.setX(d.getX() - SIZE);
-    }
-
-    public void moveRight() {
-        a.setX(a.getX() + SIZE);
-        b.setX(b.getX() + SIZE);
-        c.setX(c.getX() + SIZE);
-        d.setX(d.getX() + SIZE);
+    public void moveY(int offset){
+        a.setY(a.getY() + offset);
+        b.setY(b.getY() + offset);
+        c.setY(c.getY() + offset);
+        d.setY(d.getY() + offset);
     }
 
     public void rotate() {
