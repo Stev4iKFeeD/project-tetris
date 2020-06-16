@@ -3,7 +3,6 @@ package tetris.window;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import tetris.game.GameManager;
 

@@ -1,7 +1,6 @@
 package tetris.game;
 
 import javafx.application.Platform;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 import java.util.Timer;
@@ -62,7 +61,6 @@ public class GameManager {
                         nextMino = getNewMino();
                         nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
                     }
-
                 });
             }
         };
@@ -130,6 +128,20 @@ public class GameManager {
 
     public void rotate() {
         currentMino.rotate();
+
+        while (currentMino.a.getX() < 0 ||
+                currentMino.b.getX() < 0 ||
+                currentMino.c.getX() < 0 ||
+                currentMino.d.getX() < 0) {
+            currentMino.moveX(OFFSET);
+        }
+
+        while (currentMino.a.getX() >= gamePane.getWidth() - 1 ||
+                currentMino.b.getX() >= gamePane.getWidth() - 1 ||
+                currentMino.c.getX() >= gamePane.getWidth() - 1 ||
+                currentMino.d.getX() >= gamePane.getWidth() - 1) {
+            currentMino.moveX(-OFFSET);
+        }
     }
 
     private Shape getNewMino() {
