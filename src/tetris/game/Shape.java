@@ -11,7 +11,7 @@ public class Shape {
     protected ImageView c;
     protected ImageView d;
 
-    private int rotationState = 0;
+    protected int rotationState = 0;
 
     public final int MINO_INDEX;
     public final int SIZE = 36;
@@ -323,7 +323,17 @@ public class Shape {
         }
     }
 
-    public boolean contains(ImageView part) {
-        return (a == part) || (b == part) || (c == part) || (d == part);
+    public Shape copy() {
+        Shape result = new Shape(MINO_INDEX);
+        result.a.setX(a.getX());
+        result.a.setY(a.getY());
+        result.b.setX(b.getX());
+        result.b.setY(b.getY());
+        result.c.setX(c.getX());
+        result.c.setY(c.getY());
+        result.d.setX(d.getX());
+        result.d.setY(d.getY());
+        result.rotationState = rotationState;
+        return result;
     }
 }

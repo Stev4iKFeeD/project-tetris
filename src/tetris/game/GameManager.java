@@ -8,7 +8,7 @@ import java.util.TimerTask;
 
 public class GameManager {
 
-    public final int OFFSET = 36;
+    private final int OFFSET = 36;
     private final Pane gamePane;
     private final Pane nextMinoPane;
     private Shape currentMino;
@@ -16,7 +16,7 @@ public class GameManager {
     private Timer minoFall;
     private TimerTask fallingTask;
 
-    public boolean[][] field = new boolean[10][20];
+    private final boolean[][] field = new boolean[10][20];
 
     private int currentLevel = 2;
 
@@ -75,16 +75,16 @@ public class GameManager {
     }
 
     public boolean moveDown() {
-        if (currentMino.a.getY() + OFFSET > gamePane.getHeight() - 1 || field[(int) currentMino.a.getX() / currentMino.SIZE][(int) (currentMino.a.getY() + OFFSET) / currentMino.SIZE]) {
+        if (currentMino.a.getY() + OFFSET >= gamePane.getHeight() - 1 || field[(int) currentMino.a.getX() / currentMino.SIZE][(int) (currentMino.a.getY() + OFFSET) / currentMino.SIZE]) {
             return false;
         }
-        if (currentMino.b.getY() + OFFSET > gamePane.getHeight() - 1 || field[(int) currentMino.b.getX() / currentMino.SIZE][(int) (currentMino.b.getY() + OFFSET) / currentMino.SIZE]) {
+        if (currentMino.b.getY() + OFFSET >= gamePane.getHeight() - 1 || field[(int) currentMino.b.getX() / currentMino.SIZE][(int) (currentMino.b.getY() + OFFSET) / currentMino.SIZE]) {
             return false;
         }
-        if (currentMino.c.getY() + OFFSET > gamePane.getHeight() - 1 || field[(int) currentMino.c.getX() / currentMino.SIZE][(int) (currentMino.c.getY() + OFFSET) / currentMino.SIZE]) {
+        if (currentMino.c.getY() + OFFSET >= gamePane.getHeight() - 1 || field[(int) currentMino.c.getX() / currentMino.SIZE][(int) (currentMino.c.getY() + OFFSET) / currentMino.SIZE]) {
             return false;
         }
-        if (currentMino.d.getY() + OFFSET > gamePane.getHeight() - 1 || field[(int) currentMino.d.getX() / currentMino.SIZE][(int) (currentMino.d.getY() + OFFSET) / currentMino.SIZE]) {
+        if (currentMino.d.getY() + OFFSET >= gamePane.getHeight() - 1 || field[(int) currentMino.d.getX() / currentMino.SIZE][(int) (currentMino.d.getY() + OFFSET) / currentMino.SIZE]) {
             return false;
         }
 
@@ -127,21 +127,55 @@ public class GameManager {
     }
 
     public void rotate() {
-        currentMino.rotate();
+        Shape rotateCheckMino = currentMino.copy();
+        rotateCheckMino.rotate();
 
-        while (currentMino.a.getX() < 0 ||
-                currentMino.b.getX() < 0 ||
-                currentMino.c.getX() < 0 ||
-                currentMino.d.getX() < 0) {
-            currentMino.moveX(OFFSET);
+        // Left edge
+        while (rotateCheckMino.a.getX() < 0 ||
+                rotateCheckMino.b.getX() < 0 ||
+                rotateCheckMino.c.getX() < 0 ||
+                rotateCheckMino.d.getX() < 0) {
+            rotateCheckMino.moveX(OFFSET);
         }
 
-        while (currentMino.a.getX() >= gamePane.getWidth() - 1 ||
-                currentMino.b.getX() >= gamePane.getWidth() - 1 ||
-                currentMino.c.getX() >= gamePane.getWidth() - 1 ||
-                currentMino.d.getX() >= gamePane.getWidth() - 1) {
-            currentMino.moveX(-OFFSET);
+        // Right edge
+        while (rotateCheckMino.a.getX() >= gamePane.getWidth() - 1 ||
+                rotateCheckMino.b.getX() >= gamePane.getWidth() - 1 ||
+                rotateCheckMino.c.getX() >= gamePane.getWidth() - 1 ||
+                rotateCheckMino.d.getX() >= gamePane.getWidth() - 1) {
+            rotateCheckMino.moveX(-OFFSET);
         }
+
+        // Bottom edge
+        while (rotateCheckMino.a.getY() >= gamePane.getHeight() - 1 ||
+                rotateCheckMino.b.getY() >= gamePane.getHeight() - 1 ||
+                rotateCheckMino.c.getY() >= gamePane.getHeight() - 1 ||
+                rotateCheckMino.d.getY() >= gamePane.getHeight() - 1) {
+            rotateCheckMino.moveY(-OFFSET);
+        }
+
+        if(field[(int) (rotateCheckMino.a.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.a.getY()) / rotateCheckMino.SIZE]) {
+            return;
+        }
+        if(field[(int) (rotateCheckMino.b.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.b.getY()) / rotateCheckMino.SIZE]) {
+            return;
+        }
+        if(field[(int) (rotateCheckMino.c.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.c.getY()) / rotateCheckMino.SIZE]) {
+            return;
+        }
+        if(field[(int) (rotateCheckMino.d.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.d.getY()) / rotateCheckMino.SIZE]) {
+            return;
+        }
+
+        currentMino.a.setX(rotateCheckMino.a.getX());
+        currentMino.a.setY(rotateCheckMino.a.getY());
+        currentMino.b.setX(rotateCheckMino.b.getX());
+        currentMino.b.setY(rotateCheckMino.b.getY());
+        currentMino.c.setX(rotateCheckMino.c.getX());
+        currentMino.c.setY(rotateCheckMino.c.getY());
+        currentMino.d.setX(rotateCheckMino.d.getX());
+        currentMino.d.setY(rotateCheckMino.d.getY());
+        currentMino.rotationState = rotateCheckMino.rotationState ;
     }
 
     private Shape getNewMino() {

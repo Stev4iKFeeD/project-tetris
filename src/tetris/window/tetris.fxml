@@ -42,7 +42,7 @@
                            <Insets left="10.0" />
                         </StackPane.margin>
                      </ImageView>
-                     <Pane fx:id="gamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="361.0" StackPane.alignment="CENTER_LEFT">
+                     <Pane fx:id="gamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="721.0" prefWidth="361.0" StackPane.alignment="CENTER_LEFT">
                         <StackPane.margin>
                            <Insets left="10.0" />
                         </StackPane.margin>
