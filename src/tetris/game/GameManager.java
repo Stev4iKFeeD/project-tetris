@@ -25,6 +25,7 @@ public class GameManager {
         this.gamePane = gamePane;
         this.nextMinoPane = nextMinoPane;
         nextMino = getNewMino();
+        nextMino.initNextPos();
         this.nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
         start();
     }
@@ -59,6 +60,7 @@ public class GameManager {
                         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
                         nextMinoPane.getChildren().clear();
                         nextMino = getNewMino();
+                        nextMino.initNextPos();
                         nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
                     }
                 });

@@ -125,6 +125,24 @@ public class Shape {
         }
     }
 
+    public void initNextPos() {
+        resetPos();
+        switch (MINOS[MINO_INDEX]) {
+            case "I":
+                moveX(30);
+                moveY(84);
+                break;
+            case "O":
+                moveX(66);
+                moveY(66);
+                break;
+            default:
+                moveX(49);
+                moveY(66);
+                break;
+        }
+    }
+
     public void moveX(int offset){
         a.setX(a.getX() + offset);
         b.setX(b.getX() + offset);
