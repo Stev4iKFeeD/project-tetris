@@ -1,8 +1,12 @@
 package tetris.game;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,6 +59,7 @@ public class GameManager {
                         field[(int) currentMino.b.getX() / currentMino.SIZE][(int) currentMino.b.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.c.getX() / currentMino.SIZE][(int) currentMino.c.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.d.getX() / currentMino.SIZE][(int) currentMino.d.getY() / currentMino.SIZE] = true;
+                        clearLines();
                         currentMino = nextMino;
                         currentMino.initPos();
                         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
@@ -178,6 +183,47 @@ public class GameManager {
         currentMino.d.setX(rotateCheckMino.d.getX());
         currentMino.d.setY(rotateCheckMino.d.getY());
         currentMino.rotationState = rotateCheckMino.rotationState ;
+    }
+
+    private void clearLines() {
+        ArrayList<Integer> indexes = new ArrayList<>();
+        for (int i = 0; i < field[0].length; i++) {
+            int filled = 0;
+            for (int j = 0; j < field.length; j++) {
+                if (field[j][i]) {
+                    filled++;
+                }
+            }
+            if (filled == field.length) {
+                indexes.add(i);
+            }
+        }
+        if (indexes.size() > 0) {
+            ArrayList<Node> deletionNodes = new ArrayList<>();
+            int toOffset = (int)gamePane.getHeight();
+            for (int i = 0; i < indexes.size(); i++) {
+                toOffset = Math.min(toOffset,indexes.get(i)*OFFSET);
+                for (Node node : gamePane.getChildren()) {
+                    ImageView mino = (ImageView) node;
+                    if (mino.getY() == indexes.get(i) * OFFSET) {
+                        deletionNodes.add(node);
+                    }
+                }
+            }
+            for (Node node:deletionNodes) {
+                gamePane.getChildren().remove(node);
+            }
+            for(int i=0;i<field.length;i++){
+                Arrays.fill(field[i],false);
+            }
+            for (Node node : gamePane.getChildren()) {
+                ImageView mino = (ImageView) node;
+                if (mino.getY() < toOffset) {
+                    mino.setY(mino.getY()+indexes.size()*OFFSET);
+                }
+                field[(int)mino.getX()/OFFSET][(int)mino.getY()/OFFSET]=true;
+            }
+        }
     }
 
     private Shape getNewMino() {
