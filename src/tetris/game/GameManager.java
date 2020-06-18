@@ -4,6 +4,9 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -17,32 +20,35 @@ public class GameManager {
     private Shape currentMino;
     private Shape nextMino;
     private Timer minoFall;
-//    private TimerTask fallingTask;
 
     private final int FIELD_SIZE_X = 10;
     private final int FIELD_SIZE_Y = 20;
     private final boolean[][] field = new boolean[FIELD_SIZE_X][FIELD_SIZE_Y];
 
     private int currentLevel = 2;
+    private boolean gameIsRunning;
 
+    public boolean gameIsRunning() {
+        return gameIsRunning;
+    }
 
     public GameManager(Pane gamePane, Pane nextMinoPane) {
         this.gamePane = gamePane;
         this.nextMinoPane = nextMinoPane;
-        nextMino = getNewMino();
-        nextMino.initNextPos();
-        this.nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
+
         start();
     }
 
     public void start() {
+        nextMino = getNewMino();
+        nextMino.initNextPos();
+        this.nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
         currentMino = getNewMino();
         currentMino.initPos();
         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
         minoFall = new Timer();
-//        fallingTask = getFallingTask();
-//        minoFall.schedule(fallingTask, 420 - currentLevel * 10, 420 - currentLevel * 10);
         minoFall.schedule(getFallingTask(), 420 - currentLevel * 10, 420 - currentLevel * 10);
+        gameIsRunning = true;
     }
 
     public void stop() {
@@ -51,7 +57,7 @@ public class GameManager {
         }
     }
 
-    private TimerTask getFallingTask() {
+    private TimerTask getFallingTask(){
         return new TimerTask() {
             @Override
             public void run() {
@@ -61,11 +67,16 @@ public class GameManager {
                         field[(int) currentMino.b.getX() / currentMino.SIZE][(int) currentMino.b.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.c.getX() / currentMino.SIZE][(int) currentMino.c.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.d.getX() / currentMino.SIZE][(int) currentMino.d.getY() / currentMino.SIZE] = true;
+
                         clearLines();
                         currentMino = nextMino;
-                        currentMino.initPos();
-                        gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
                         nextMinoPane.getChildren().clear();
+                        currentMino.initPos();
+                        if (checkGameOver()) {
+                            gameOver();
+                            return;
+                        }
+                        gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
                         nextMino = getNewMino();
                         nextMino.initNextPos();
                         nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
@@ -75,12 +86,44 @@ public class GameManager {
         };
     }
 
+    public boolean checkGameOver() {
+        if (currentMino.a.getY() < 0) {
+            return true;
+        }
+        if (currentMino.b.getY() < 0) {
+            return true;
+        }
+        if (currentMino.c.getY() < 0) {
+            return true;
+        }
+        if (currentMino.d.getY() < 0) {
+            return true;
+        }
+
+        if (field[(int) currentMino.a.getX() / currentMino.SIZE][(int) currentMino.a.getY() / currentMino.SIZE] ||
+            field[(int) currentMino.b.getX() / currentMino.SIZE][(int) currentMino.b.getY() / currentMino.SIZE] ||
+            field[(int) currentMino.c.getX() / currentMino.SIZE][(int) currentMino.c.getY() / currentMino.SIZE] ||
+            field[(int) currentMino.d.getX() / currentMino.SIZE][(int) currentMino.d.getY() / currentMino.SIZE]) {
+            currentMino.moveY(-OFFSET);
+            return checkGameOver();
+        }
+
+        return false;
+    }
+
+    public void gameOver() {
+        minoFall.cancel();
+        gameIsRunning = false;
+        Text gameOverText = new Text(100, 200, "GAME OVER");
+        gameOverText.setFill(Color.WHITE);
+        gameOverText.setFont(Font.font(25));
+        gamePane.getChildren().add(gameOverText);
+    }
+
     public void dropDown(){
         while (moveDown());
         minoFall.cancel();
         minoFall = new Timer();
-//        fallingTask = getFallingTask();
-//        minoFall.schedule(fallingTask, 0, 420 - currentLevel * 10);
         minoFall.schedule(getFallingTask(), 0, 420 - currentLevel * 10);
     }
 
@@ -235,6 +278,5 @@ public class GameManager {
 
     private Shape getNewMino() {
         return new Shape((int) (Math.random() * 7));
-//        return new Shape(0);
     }
 }

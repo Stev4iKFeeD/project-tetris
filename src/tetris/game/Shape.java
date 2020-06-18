@@ -120,6 +120,9 @@ public class Shape {
 
         if (MINOS[MINO_INDEX].equals("O")) {
             moveX(4 * SIZE);
+        } else if (MINOS[MINO_INDEX].equals("I")) {
+            moveX(3 * SIZE);
+            moveY(SIZE);
         } else {
             moveX(3 * SIZE);
         }

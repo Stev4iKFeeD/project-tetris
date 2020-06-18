@@ -21,16 +21,18 @@ public class Controller {
         stage.setOnCloseRequest(event -> gameManager.stop());
 
         stage.getScene().setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.LEFT) {
-                gameManager.moveLeft();
-            } else if(event.getCode() == KeyCode.RIGHT) {
-                gameManager.moveRight();
-            } else if(event.getCode() == KeyCode.UP) {
-                gameManager.rotate();
-            } else if(event.getCode() == KeyCode.DOWN){
-                gameManager.moveDown();
-            } else if(event.getCode() == KeyCode.SPACE) {
-                gameManager.dropDown();
+            if (gameManager.gameIsRunning()) {
+                if (event.getCode() == KeyCode.LEFT) {
+                    gameManager.moveLeft();
+                } else if (event.getCode() == KeyCode.RIGHT) {
+                    gameManager.moveRight();
+                } else if (event.getCode() == KeyCode.UP) {
+                    gameManager.rotate();
+                } else if (event.getCode() == KeyCode.DOWN) {
+                    gameManager.moveDown();
+                } else if (event.getCode() == KeyCode.SPACE) {
+                    gameManager.dropDown();
+                }
             }
         });
 //        stage.requestFocus();
