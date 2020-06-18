@@ -6,7 +6,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,9 +17,11 @@ public class GameManager {
     private Shape currentMino;
     private Shape nextMino;
     private Timer minoFall;
-    private TimerTask fallingTask;
+//    private TimerTask fallingTask;
 
-    private final boolean[][] field = new boolean[10][20];
+    private final int FIELD_SIZE_X = 10;
+    private final int FIELD_SIZE_Y = 20;
+    private final boolean[][] field = new boolean[FIELD_SIZE_X][FIELD_SIZE_Y];
 
     private int currentLevel = 2;
 
@@ -38,9 +39,10 @@ public class GameManager {
         currentMino = getNewMino();
         currentMino.initPos();
         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
-        fallingTask = getFallingTask();
         minoFall = new Timer();
-        minoFall.schedule(fallingTask, 420 - currentLevel * 10, 420 - currentLevel * 10);
+//        fallingTask = getFallingTask();
+//        minoFall.schedule(fallingTask, 420 - currentLevel * 10, 420 - currentLevel * 10);
+        minoFall.schedule(getFallingTask(), 420 - currentLevel * 10, 420 - currentLevel * 10);
     }
 
     public void stop() {
@@ -49,7 +51,7 @@ public class GameManager {
         }
     }
 
-    private TimerTask getFallingTask(){
+    private TimerTask getFallingTask() {
         return new TimerTask() {
             @Override
             public void run() {
@@ -77,8 +79,9 @@ public class GameManager {
         while (moveDown());
         minoFall.cancel();
         minoFall = new Timer();
-        fallingTask = getFallingTask();
-        minoFall.schedule(fallingTask, 0, 420 - currentLevel * 10);
+//        fallingTask = getFallingTask();
+//        minoFall.schedule(fallingTask, 0, 420 - currentLevel * 10);
+        minoFall.schedule(getFallingTask(), 0, 420 - currentLevel * 10);
     }
 
     public boolean moveDown() {
@@ -161,6 +164,14 @@ public class GameManager {
             rotateCheckMino.moveY(-OFFSET);
         }
 
+        // Top edge (just don't rotate)
+        if (rotateCheckMino.a.getY() < 0 ||
+                rotateCheckMino.b.getY() < 0 ||
+                rotateCheckMino.c.getY() < 0 ||
+                rotateCheckMino.d.getY() < 0) {
+            return;
+        }
+
         if(field[(int) (rotateCheckMino.a.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.a.getY()) / rotateCheckMino.SIZE]) {
             return;
         }
@@ -186,47 +197,44 @@ public class GameManager {
     }
 
     private void clearLines() {
-        ArrayList<Integer> indexes = new ArrayList<>();
-        for (int i = 0; i < field[0].length; i++) {
-            int filled = 0;
-            for (int j = 0; j < field.length; j++) {
-                if (field[j][i]) {
-                    filled++;
+        for (int i = 0; i < FIELD_SIZE_Y; i++) {
+            boolean fullyFilled = true;
+            for (int j = 0; j < FIELD_SIZE_X; j++) {
+                if (!field[j][i]) {
+                    fullyFilled = false;
+                    break;
                 }
             }
-            if (filled == field.length) {
-                indexes.add(i);
+            if (!fullyFilled) {
+                continue;
             }
-        }
-        if (indexes.size() > 0) {
+
             ArrayList<Node> deletionNodes = new ArrayList<>();
-            int toOffset = (int)gamePane.getHeight();
-            for (int i = 0; i < indexes.size(); i++) {
-                toOffset = Math.min(toOffset,indexes.get(i)*OFFSET);
-                for (Node node : gamePane.getChildren()) {
-                    ImageView mino = (ImageView) node;
-                    if (mino.getY() == indexes.get(i) * OFFSET) {
-                        deletionNodes.add(node);
-                    }
+            for (Node node : gamePane.getChildren()) {
+                if (((ImageView) node).getY() == i * OFFSET) {
+                    deletionNodes.add(node);
                 }
             }
-            for (Node node:deletionNodes) {
+            for (Node node : deletionNodes) {
                 gamePane.getChildren().remove(node);
             }
-            for(int i=0;i<field.length;i++){
-                Arrays.fill(field[i],false);
+            for (int k = 0; k <= i; k++) {
+                for (int l = 0; l < FIELD_SIZE_X; l++) {
+                    field[l][k] = false;
+                }
             }
             for (Node node : gamePane.getChildren()) {
                 ImageView mino = (ImageView) node;
-                if (mino.getY() < toOffset) {
-                    mino.setY(mino.getY()+indexes.size()*OFFSET);
+                if (mino.getY() < i * OFFSET) {
+                    mino.setY(mino.getY() + OFFSET);
+                    field[(int) mino.getX() / OFFSET][(int) mino.getY() / OFFSET] = true;
                 }
-                field[(int)mino.getX()/OFFSET][(int)mino.getY()/OFFSET]=true;
             }
         }
     }
 
     private Shape getNewMino() {
         return new Shape((int) (Math.random() * 7));
+//        return new Shape(0);
     }
 }
