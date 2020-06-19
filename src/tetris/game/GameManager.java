@@ -19,6 +19,7 @@ public class GameManager {
     private final Pane nextMinoPane;
     private Shape currentMino;
     private Shape nextMino;
+    private Shape fallPosMino;
     private Timer minoFall;
 
     private final int FIELD_SIZE_X = 10;
@@ -45,6 +46,7 @@ public class GameManager {
         this.nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
         currentMino = getNewMino();
         currentMino.initPos();
+        initFallPos();
         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
         minoFall = new Timer();
         minoFall.schedule(getFallingTask(), 420 - currentLevel * 10, 420 - currentLevel * 10);
@@ -63,6 +65,8 @@ public class GameManager {
             public void run() {
                 Platform.runLater(() -> {
                     if (!moveDown()) {
+                        removeFallPos();
+
                         field[(int) currentMino.a.getX() / currentMino.SIZE][(int) currentMino.a.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.b.getX() / currentMino.SIZE][(int) currentMino.b.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.c.getX() / currentMino.SIZE][(int) currentMino.c.getY() / currentMino.SIZE] = true;
@@ -76,6 +80,7 @@ public class GameManager {
                             gameOver();
                             return;
                         }
+                        initFallPos();
                         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
                         nextMino = getNewMino();
                         nextMino.initNextPos();
@@ -113,6 +118,7 @@ public class GameManager {
 
     public void gameOver() {
         minoFall.cancel();
+        removeFallPos();
         gameIsRunning = false;
         Text gameOverText = new Text(100, 200, "GAME OVER");
         gameOverText.setFill(Color.WHITE);
@@ -120,8 +126,48 @@ public class GameManager {
         gamePane.getChildren().add(gameOverText);
     }
 
-    public void dropDown(){
+    private void initFallPos() {
+        fallPosMino = currentMino.copy();
+        fallPosMino.ghostize();
+
+        gamePane.getChildren().addAll(fallPosMino.a, fallPosMino.b, fallPosMino.c, fallPosMino.d);
+        updateFallPos();
+    }
+
+    private void updateFallPos() {
+        fallPosMino.a.setX(currentMino.a.getX());
+        fallPosMino.a.setY(currentMino.a.getY());
+        fallPosMino.b.setX(currentMino.b.getX());
+        fallPosMino.b.setY(currentMino.b.getY());
+        fallPosMino.c.setX(currentMino.c.getX());
+        fallPosMino.c.setY(currentMino.c.getY());
+        fallPosMino.d.setX(currentMino.d.getX());
+        fallPosMino.d.setY(currentMino.d.getY());
+        while (true) {
+            if (fallPosMino.a.getY() + OFFSET >= gamePane.getPrefHeight() - 1 || field[(int) fallPosMino.a.getX() / fallPosMino.SIZE][(int) (fallPosMino.a.getY() + OFFSET) / fallPosMino.SIZE]) {
+                break;
+            }
+            if (fallPosMino.b.getY() + OFFSET >= gamePane.getPrefHeight() - 1 || field[(int) fallPosMino.b.getX() / fallPosMino.SIZE][(int) (fallPosMino.b.getY() + OFFSET) / fallPosMino.SIZE]) {
+                break;
+            }
+            if (fallPosMino.c.getY() + OFFSET >= gamePane.getPrefHeight() - 1 || field[(int) fallPosMino.c.getX() / fallPosMino.SIZE][(int) (fallPosMino.c.getY() + OFFSET) / fallPosMino.SIZE]) {
+                break;
+            }
+            if (fallPosMino.d.getY() + OFFSET >= gamePane.getPrefHeight() - 1 || field[(int) fallPosMino.d.getX() / fallPosMino.SIZE][(int) (fallPosMino.d.getY() + OFFSET) / fallPosMino.SIZE]) {
+                break;
+            }
+
+            fallPosMino.moveY(OFFSET);
+        }
+    }
+
+    private void removeFallPos() {
+        gamePane.getChildren().removeAll(fallPosMino.a, fallPosMino.b, fallPosMino.c, fallPosMino.d);
+    }
+
+    public void dropDown() {
         while (moveDown());
+        removeFallPos();
         minoFall.cancel();
         minoFall = new Timer();
         minoFall.schedule(getFallingTask(), 0, 420 - currentLevel * 10);
@@ -160,6 +206,7 @@ public class GameManager {
         }
 
         currentMino.moveX(-OFFSET);
+        updateFallPos();
     }
 
     public void moveRight() {
@@ -177,6 +224,7 @@ public class GameManager {
         }
 
         currentMino.moveX(OFFSET);
+        updateFallPos();
     }
 
     public void rotate() {
@@ -236,7 +284,8 @@ public class GameManager {
         currentMino.c.setY(rotateCheckMino.c.getY());
         currentMino.d.setX(rotateCheckMino.d.getX());
         currentMino.d.setY(rotateCheckMino.d.getY());
-        currentMino.rotationState = rotateCheckMino.rotationState ;
+        currentMino.rotationState = rotateCheckMino.rotationState;
+        updateFallPos();
     }
 
     private void clearLines() {

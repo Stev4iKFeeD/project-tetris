@@ -357,4 +357,12 @@ public class Shape {
         result.rotationState = rotationState;
         return result;
     }
+
+    public void ghostize() {
+        Image minoImage = new Image("assets/minos/mino_ghost.png");
+        a.setImage(minoImage);
+        b.setImage(minoImage);
+        c.setImage(minoImage);
+        d.setImage(minoImage);
+    }
 }
