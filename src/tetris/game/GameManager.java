@@ -2,6 +2,7 @@ package tetris.game;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -17,6 +18,9 @@ public class GameManager {
     private final int OFFSET = 36;
     private final Pane gamePane;
     private final Pane nextMinoPane;
+    private final Label linesLabel;
+    private final Label scoreLabel;
+    private final Label levelLabel;
     private Shape currentMino;
     private Shape nextMino;
     private Shape fallPosMino;
@@ -26,17 +30,22 @@ public class GameManager {
     private final int FIELD_SIZE_Y = 20;
     private final boolean[][] field = new boolean[FIELD_SIZE_X][FIELD_SIZE_Y];
 
-    private int currentLevel = 2;
+    private int startLevel = 1;
+    public int score = 0;
+    private int lines = 0;
+    private int currentLevel = lines/10 + startLevel;
     private boolean gameIsRunning;
 
     public boolean gameIsRunning() {
         return gameIsRunning;
     }
 
-    public GameManager(Pane gamePane, Pane nextMinoPane) {
+    public GameManager(Pane gamePane, Pane nextMinoPane, Label linesLabel, Label scoreLabel, Label levelLabel) {
         this.gamePane = gamePane;
         this.nextMinoPane = nextMinoPane;
-
+        this.linesLabel = linesLabel;
+        this.scoreLabel = scoreLabel;
+        this.levelLabel = levelLabel;
         start();
     }
 
@@ -49,8 +58,9 @@ public class GameManager {
         initFallPos();
         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
         minoFall = new Timer();
-        minoFall.schedule(getFallingTask(), 420 - currentLevel * 10, 420 - currentLevel * 10);
+        minoFall.schedule(getFallingTask(), (int) (1000 * Math.pow(0.8, currentLevel) + 1), (int) (1000 * Math.pow(0.8, currentLevel) + 1));
         gameIsRunning = true;
+        updateData();
     }
 
     public void stop() {
@@ -85,6 +95,7 @@ public class GameManager {
                         nextMino = getNewMino();
                         nextMino.initNextPos();
                         nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
+                        updateData();
                     }
                 });
             }
@@ -166,11 +177,13 @@ public class GameManager {
     }
 
     public void dropDown() {
-        while (moveDown());
+        while (moveDown()) {
+            score += 2;
+        }
         removeFallPos();
         minoFall.cancel();
         minoFall = new Timer();
-        minoFall.schedule(getFallingTask(), 0, 420 - currentLevel * 10);
+        minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.8, currentLevel) + 1));
     }
 
     public boolean moveDown() {
@@ -289,6 +302,7 @@ public class GameManager {
     }
 
     private void clearLines() {
+        int cleared = 0;
         for (int i = 0; i < FIELD_SIZE_Y; i++) {
             boolean fullyFilled = true;
             for (int j = 0; j < FIELD_SIZE_X; j++) {
@@ -300,7 +314,7 @@ public class GameManager {
             if (!fullyFilled) {
                 continue;
             }
-
+            cleared++;
             ArrayList<Node> deletionNodes = new ArrayList<>();
             for (Node node : gamePane.getChildren()) {
                 if (((ImageView) node).getY() == i * OFFSET) {
@@ -323,9 +337,39 @@ public class GameManager {
                 }
             }
         }
+        if (cleared > 0) {
+            lines += cleared;
+            switch (cleared) {
+                case 1:
+                    score += currentLevel * 100;
+                    break;
+                case 2:
+                    score += currentLevel * 300;
+                    break;
+                case 3:
+                    score += currentLevel * 500;
+                    break;
+                case 4:
+                    score += currentLevel * 800;
+                    break;
+            }
+            if (lines / 10 + startLevel > currentLevel) {
+                minoFall.cancel();
+                minoFall = new Timer();
+                minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.8, currentLevel) + 1));
+                currentLevel = lines / 10 + startLevel;
+            }
+
+        }
     }
 
     private Shape getNewMino() {
         return new Shape((int) (Math.random() * 7));
+    }
+
+    public void updateData() {
+        linesLabel.setText(Integer.toString(lines));
+        scoreLabel.setText(Integer.toString(score));
+        levelLabel.setText(Integer.toString(currentLevel));
     }
 }

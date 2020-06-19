@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.stage.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.stage.Stage?>
 
 <Stage fx:id="stage" resizable="false" title="Tetris" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tetris.window.Controller">
     <scene>
-        <Scene>
+        <Scene stylesheets="@style.css">
          <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="670.0" style="-fx-background-image: url(/assets/bg.png);">
             <right>
                <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="224.0" BorderPane.alignment="CENTER">
@@ -28,6 +33,30 @@
                            <Insets top="46.0" />
                         </StackPane.margin>
                      </Pane>
+                     <Label fx:id="linesLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="43.0" prefWidth="205.0" text="25" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
+                        <font>
+                           <Font size="36.0" />
+                        </font>
+                        <StackPane.margin>
+                           <Insets bottom="194.0" />
+                        </StackPane.margin>
+                     </Label>
+                     <Label fx:id="scoreLabel" alignment="CENTER" prefHeight="43.0" prefWidth="205.0" text="15010" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
+                        <font>
+                           <Font size="36.0" />
+                        </font>
+                        <StackPane.margin>
+                           <Insets bottom="103.0" />
+                        </StackPane.margin>
+                     </Label>
+                     <Label fx:id="levelLabel" alignment="CENTER" prefHeight="43.0" prefWidth="205.0" text="2" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
+                        <font>
+                           <Font size="36.0" />
+                        </font>
+                        <StackPane.margin>
+                           <Insets bottom="10.0" />
+                        </StackPane.margin>
+                     </Label>
                   </children>
                </StackPane>
             </right>
