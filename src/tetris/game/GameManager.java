@@ -5,11 +5,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,15 +30,17 @@ public class GameManager {
     private final int FIELD_SIZE_Y = 20;
     private final boolean[][] field = new boolean[FIELD_SIZE_X][FIELD_SIZE_Y];
 
-    private int startLevel = 1;
+    private final int startLevel = 1;
     public int score = 0;
     private int lines = 0;
-    private int currentLevel = lines/10 + startLevel;
+    private int currentLevel = lines / 10 + startLevel;
     private boolean gameIsRunning;
 
     public boolean gameIsRunning() {
         return gameIsRunning;
     }
+
+    private AudioClip nowPlaying;
 
     public GameManager(Pane gamePane, Pane nextMinoPane, Label linesLabel, Label scoreLabel, Label levelLabel) {
         this.gamePane = gamePane;
@@ -58,9 +60,10 @@ public class GameManager {
         initFallPos();
         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
         minoFall = new Timer();
-        minoFall.schedule(getFallingTask(), (int) (1000 * Math.pow(0.8, currentLevel) + 1), (int) (1000 * Math.pow(0.8, currentLevel) + 1));
+        minoFall.schedule(getFallingTask(), (int) (1000 * Math.pow(0.9, currentLevel) + 1), (int) (1000 * Math.pow(0.9, currentLevel) + 1));
         gameIsRunning = true;
         updateData();
+        playThemeMusic();
     }
 
     public void stop() {
@@ -74,7 +77,8 @@ public class GameManager {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (!moveDown()) {
+                    if (!moveDown(false)) {
+                        playLockSound();
                         removeFallPos();
 
                         field[(int) currentMino.a.getX() / currentMino.SIZE][(int) currentMino.a.getY() / currentMino.SIZE] = true;
@@ -128,6 +132,8 @@ public class GameManager {
     }
 
     public void gameOver() {
+        stopThemeMusic();
+        playGameOverSound();
         minoFall.cancel();
         removeFallPos();
         gameIsRunning = false;
@@ -177,16 +183,17 @@ public class GameManager {
     }
 
     public void dropDown() {
-        while (moveDown()) {
+       playDropDownSound();
+        while (moveDown(false)) {
             score += 2;
         }
         removeFallPos();
         minoFall.cancel();
         minoFall = new Timer();
-        minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.8, currentLevel) + 1));
+        minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.9, currentLevel) + 1));
     }
 
-    public boolean moveDown() {
+    public boolean moveDown(boolean fromKeyboard) {
         if (currentMino.a.getY() + OFFSET >= gamePane.getHeight() - 1 || field[(int) currentMino.a.getX() / currentMino.SIZE][(int) (currentMino.a.getY() + OFFSET) / currentMino.SIZE]) {
             return false;
         }
@@ -200,6 +207,9 @@ public class GameManager {
             return false;
         }
 
+        if (fromKeyboard) {
+            playMoveSound();
+        }
         currentMino.moveY(OFFSET);
         return true;
     }
@@ -218,6 +228,7 @@ public class GameManager {
             return;
         }
 
+        playMoveSound();
         currentMino.moveX(-OFFSET);
         updateFallPos();
     }
@@ -236,6 +247,7 @@ public class GameManager {
             return;
         }
 
+        playMoveSound();
         currentMino.moveX(OFFSET);
         updateFallPos();
     }
@@ -289,6 +301,7 @@ public class GameManager {
             return;
         }
 
+        playMoveSound();
         currentMino.a.setX(rotateCheckMino.a.getX());
         currentMino.a.setY(rotateCheckMino.a.getY());
         currentMino.b.setX(rotateCheckMino.b.getX());
@@ -315,15 +328,29 @@ public class GameManager {
                 continue;
             }
             cleared++;
-            ArrayList<Node> deletionNodes = new ArrayList<>();
+
+            Node[] deletionNodes = new Node[10];
+            int current = 0;
             for (Node node : gamePane.getChildren()) {
+                if (current > 10) {
+                    break;
+                }
                 if (((ImageView) node).getY() == i * OFFSET) {
-                    deletionNodes.add(node);
+                    deletionNodes[current] = node;
+                    current++;
                 }
             }
             for (Node node : deletionNodes) {
                 gamePane.getChildren().remove(node);
             }
+
+//            // The previous block of code can be replaced with the following
+//            int yPos = i * OFFSET;
+//            java.util.List<Node> deletionNodes = gamePane.getChildren().filtered(node -> ((ImageView) node).getY() == yPos);
+//            while (deletionNodes.size() > 0) {
+//                gamePane.getChildren().remove(deletionNodes.get(0));
+//            }
+
             for (int k = 0; k <= i; k++) {
                 for (int l = 0; l < FIELD_SIZE_X; l++) {
                     field[l][k] = false;
@@ -338,6 +365,7 @@ public class GameManager {
             }
         }
         if (cleared > 0) {
+            playClearLinesSound();
             lines += cleared;
             switch (cleared) {
                 case 1:
@@ -354,9 +382,10 @@ public class GameManager {
                     break;
             }
             if (lines / 10 + startLevel > currentLevel) {
+                playLevelUpSound();
                 minoFall.cancel();
                 minoFall = new Timer();
-                minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.8, currentLevel) + 1));
+                minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.9, currentLevel) + 1));
                 currentLevel = lines / 10 + startLevel;
             }
 
@@ -371,5 +400,55 @@ public class GameManager {
         linesLabel.setText(Integer.toString(lines));
         scoreLabel.setText(Integer.toString(score));
         levelLabel.setText(Integer.toString(currentLevel));
+    }
+
+    public void playThemeMusic() {
+        if (nowPlaying == null) {
+            nowPlaying = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/theme.mp3").toString());
+            nowPlaying.setVolume(0.25);
+            nowPlaying.setCycleCount(AudioClip.INDEFINITE);
+            nowPlaying.play();
+        }
+    }
+
+    public void stopThemeMusic() {
+        nowPlaying.stop();
+        nowPlaying = null;
+    }
+
+    public void playMoveSound() {
+        AudioClip moveSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/move.mp3").toString());
+        moveSound.setVolume(0.5);
+        moveSound.play();
+    }
+
+    public void playDropDownSound() {
+        AudioClip dropDownSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/dropDown.mp3").toString());
+        dropDownSound.setVolume(0.5);
+        dropDownSound.play();
+    }
+
+    public void playLockSound() {
+        AudioClip lockSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/lock.mp3").toString());
+        lockSound.setVolume(0.5);
+        lockSound.play();
+    }
+
+    public void playClearLinesSound() {
+        AudioClip clearLinesSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/clearLines.mp3").toString());
+        clearLinesSound.setVolume(0.5);
+        clearLinesSound.play();
+    }
+
+    public void playLevelUpSound() {
+        AudioClip levelUpSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/levelUp.mp3").toString());
+        levelUpSound.setVolume(0.5);
+        levelUpSound.play();
+    }
+
+    public void playGameOverSound() {
+        AudioClip gameOverSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/gameOver.mp3").toString());
+        gameOverSound.setVolume(0.5);
+        gameOverSound.play();
     }
 }

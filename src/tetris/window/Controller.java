@@ -39,7 +39,7 @@ public class Controller {
                     gameManager.rotate();
                 } else if (event.getCode() == KeyCode.DOWN) {
                     gameManager.score++;
-                    gameManager.moveDown();
+                    gameManager.moveDown(true);
                 } else if (event.getCode() == KeyCode.SPACE) {
                     gameManager.dropDown();
                 }
