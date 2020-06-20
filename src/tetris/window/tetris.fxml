@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Scene?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -14,76 +15,354 @@
 <Stage fx:id="stage" resizable="false" title="Tetris" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tetris.window.Controller">
     <scene>
         <Scene stylesheets="@style.css">
-         <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="670.0" style="-fx-background-image: url(/assets/bg.png);">
-            <right>
-               <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="224.0" BorderPane.alignment="CENTER">
+         <StackPane>
+            <children>
+               <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="670.0" style="-fx-background-image: url(/assets/bg.png);">
+                  <right>
+                     <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="224.0" BorderPane.alignment="CENTER">
+                        <children>
+                           <ImageView fitHeight="261.0" fitWidth="224.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_CENTER">
+                              <image>
+                                 <Image url="@../../assets/next_stroke.png" />
+                              </image>
+                           </ImageView>
+                           <ImageView fitHeight="284.0" fitWidth="224.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_CENTER">
+                              <image>
+                                 <Image url="@../../assets/score_stroke.png" />
+                              </image>
+                           </ImageView>
+                           <Pane fx:id="nextMinoPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="204.0" prefWidth="204.0" StackPane.alignment="TOP_CENTER">
+                              <StackPane.margin>
+                                 <Insets top="46.0" />
+                              </StackPane.margin>
+                           </Pane>
+                           <StackPane fx:id="newGameBtn2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#newGame" prefHeight="50.0" prefWidth="224.0">
+                              <children>
+                                 <ImageView fitHeight="50.0" fitWidth="224.0">
+                                    <image>
+                                       <Image url="@../../assets/btn_green.png" />
+                                    </image>
+                                 </ImageView>
+                                 <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="NEW GAME" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                                    <font>
+                                       <Font size="36.0" />
+                                    </font>
+                                    <effect>
+                                       <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                                    </effect>
+                                    <StackPane.margin>
+                                       <Insets />
+                                    </StackPane.margin>
+                                 </Label>
+                              </children>
+                              <StackPane.margin>
+                                 <Insets top="34.0" />
+                              </StackPane.margin>
+                           </StackPane>
+                           <StackPane fx:id="pauseBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#pause" prefHeight="50.0" prefWidth="224.0">
+                              <children>
+                                 <ImageView fitHeight="50.0" fitWidth="224.0">
+                                    <image>
+                                       <Image url="@../../assets/btn_red.png" />
+                                    </image>
+                                 </ImageView>
+                                 <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="PAUSE" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                                    <font>
+                                       <Font size="36.0" />
+                                    </font>
+                                    <effect>
+                                       <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                                    </effect>
+                                    <StackPane.margin>
+                                       <Insets />
+                                    </StackPane.margin>
+                                 </Label>
+                              </children>
+                              <StackPane.margin>
+                                 <Insets bottom="80.0" />
+                              </StackPane.margin>
+                           </StackPane>
+                           <Label fx:id="linesLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="43.0" prefWidth="205.0" text="25" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <StackPane.margin>
+                                 <Insets bottom="194.0" />
+                              </StackPane.margin>
+                           </Label>
+                           <Label fx:id="scoreLabel" alignment="CENTER" prefHeight="43.0" prefWidth="205.0" text="15010" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <StackPane.margin>
+                                 <Insets bottom="103.0" />
+                              </StackPane.margin>
+                           </Label>
+                           <Label fx:id="levelLabel" alignment="CENTER" prefHeight="43.0" prefWidth="205.0" text="2" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <StackPane.margin>
+                                 <Insets bottom="10.0" />
+                              </StackPane.margin>
+                           </Label>
+                        </children>
+                     </StackPane>
+                  </right>
+                  <center>
+                     <StackPane BorderPane.alignment="TOP_LEFT">
+                        <children>
+                           <ImageView fitHeight="721.0" fitWidth="361.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+                              <image>
+                                 <Image url="@../../assets/gf_grid.png" />
+                              </image>
+                              <StackPane.margin>
+                                 <Insets left="10.0" />
+                              </StackPane.margin>
+                           </ImageView>
+                           <Pane fx:id="gamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="721.0" prefWidth="361.0" StackPane.alignment="CENTER_LEFT">
+                              <StackPane.margin>
+                                 <Insets left="10.0" />
+                              </StackPane.margin>
+                           </Pane>
+                           <ImageView fitHeight="740.0" fitWidth="381.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+                              <image>
+                                 <Image url="@../../assets/gf_stroke.png" />
+                              </image>
+                           </ImageView>
+                        </children>
+                     </StackPane>
+                  </center>
+               </BorderPane>
+               <StackPane fx:id="startMenu" visible="false">
                   <children>
-                     <ImageView fitHeight="261.0" fitWidth="224.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_CENTER">
+                     <ImageView fitHeight="236.0" fitWidth="277.0" StackPane.alignment="CENTER">
                         <image>
-                           <Image url="@../../assets/next_stroke.png" />
+                           <Image url="@../../assets/start_menu.png" />
                         </image>
                      </ImageView>
-                     <ImageView fitHeight="284.0" fitWidth="224.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_CENTER">
-                        <image>
-                           <Image url="@../../assets/score_stroke.png" />
-                        </image>
-                     </ImageView>
-                     <Pane fx:id="nextMinoPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="204.0" prefWidth="204.0" StackPane.alignment="TOP_CENTER">
+                     <StackPane fx:id="playBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#play" prefHeight="50.0" prefWidth="224.0" StackPane.alignment="CENTER">
                         <StackPane.margin>
-                           <Insets top="46.0" />
+                           <Insets bottom="65.0" />
                         </StackPane.margin>
-                     </Pane>
-                     <Label fx:id="linesLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="43.0" prefWidth="205.0" text="25" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
-                        <font>
-                           <Font size="36.0" />
-                        </font>
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_green.png" />
+                              </image>
+                           </ImageView>
+                           <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="PLAY" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                           </Label>
+                        </children>
+                     </StackPane>
+                     <StackPane fx:id="levelBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#changeLevel" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_gray.png" />
+                              </image>
+                           </ImageView>
+                           <Label fx:id="startLevelLabel" alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="LEVEL: 1" textAlignment="CENTER" textFill="WHITE">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                           </Label>
+                        </children>
                         <StackPane.margin>
-                           <Insets bottom="194.0" />
+                           <Insets top="50.0" />
                         </StackPane.margin>
-                     </Label>
-                     <Label fx:id="scoreLabel" alignment="CENTER" prefHeight="43.0" prefWidth="205.0" text="15010" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
-                        <font>
-                           <Font size="36.0" />
-                        </font>
+                     </StackPane>
+                     <StackPane fx:id="quitBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#quit" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_red.png" />
+                              </image>
+                           </ImageView>
+                           <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="QUIT" textAlignment="CENTER" textFill="WHITE">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                           </Label>
+                        </children>
                         <StackPane.margin>
-                           <Insets bottom="103.0" />
+                           <Insets top="165.0" />
                         </StackPane.margin>
-                     </Label>
-                     <Label fx:id="levelLabel" alignment="CENTER" prefHeight="43.0" prefWidth="205.0" text="2" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="BOTTOM_CENTER">
-                        <font>
-                           <Font size="36.0" />
-                        </font>
-                        <StackPane.margin>
-                           <Insets bottom="10.0" />
-                        </StackPane.margin>
-                     </Label>
+                     </StackPane>
                   </children>
                </StackPane>
-            </right>
-            <center>
-               <StackPane BorderPane.alignment="TOP_LEFT">
+               <StackPane fx:id="gameOverMenu" visible="false">
                   <children>
-                     <ImageView fitHeight="721.0" fitWidth="361.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+                     <ImageView fitHeight="288.0" fitWidth="277.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
                         <image>
-                           <Image url="@../../assets/gf_grid.png" />
-                        </image>
-                        <StackPane.margin>
-                           <Insets left="10.0" />
-                        </StackPane.margin>
-                     </ImageView>
-                     <Pane fx:id="gamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="721.0" prefWidth="361.0" StackPane.alignment="CENTER_LEFT">
-                        <StackPane.margin>
-                           <Insets left="10.0" />
-                        </StackPane.margin>
-                     </Pane>
-                     <ImageView fitHeight="740.0" fitWidth="381.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
-                        <image>
-                           <Image url="@../../assets/gf_stroke.png" />
+                           <Image url="@../../assets/gameOver_menu.png" />
                         </image>
                      </ImageView>
+                     <Label fx:id="totalScoreLabel" alignment="CENTER" prefHeight="45.0" prefWidth="223.0" text="0" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                        <font>
+                           <Font size="36.0" />
+                        </font>
+                        <StackPane.margin>
+                           <Insets bottom="23.0" />
+                        </StackPane.margin>
+                     </Label>
+                     <StackPane fx:id="newGameBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#newGame" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_green.png" />
+                              </image>
+                           </ImageView>
+                           <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="NEW GAME" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                              <StackPane.margin>
+                                 <Insets />
+                              </StackPane.margin>
+                           </Label>
+                        </children>
+                        <StackPane.margin>
+                           <Insets top="100.0" />
+                        </StackPane.margin>
+                     </StackPane>
+                     <StackPane fx:id="quitBtn2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#quit" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_red.png" />
+                              </image>
+                           </ImageView>
+                           <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="QUIT" textAlignment="CENTER" textFill="WHITE">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                           </Label>
+                        </children>
+                        <StackPane.margin>
+                           <Insets top="215.0" />
+                        </StackPane.margin>
+                     </StackPane>
                   </children>
                </StackPane>
-            </center></BorderPane>
+               <StackPane fx:id="pauseMenu" visible="false">
+                  <children>
+                     <ImageView fitHeight="295.0" fitWidth="277.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+                        <image>
+                           <Image url="@../../assets/pause_menu.png" />
+                        </image>
+                     </ImageView>
+                     <StackPane fx:id="resumeBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#pause" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_green.png" />
+                              </image>
+                           </ImageView>
+                           <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="RESUME" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                              <StackPane.margin>
+                                 <Insets />
+                              </StackPane.margin>
+                           </Label>
+                        </children>
+                        <StackPane.margin>
+                           <Insets bottom="120.0" />
+                        </StackPane.margin>
+                     </StackPane>
+                     <StackPane fx:id="quitBtn3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#quit" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_red.png" />
+                              </image>
+                           </ImageView>
+                           <Label alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="QUIT" textAlignment="CENTER" textFill="WHITE">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                           </Label>
+                        </children>
+                        <StackPane.margin>
+                           <Insets top="225.0" />
+                        </StackPane.margin>
+                     </StackPane>
+                     <StackPane fx:id="soundBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#soundToggle" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_gray.png" />
+                              </image>
+                           </ImageView>
+                           <Label fx:id="soundLabel" alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="SOUND: ON" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                              <StackPane.margin>
+                                 <Insets />
+                              </StackPane.margin>
+                           </Label>
+                        </children>
+                        <StackPane.margin>
+                           <Insets bottom="5.0" />
+                        </StackPane.margin>
+                     </StackPane>
+                     <StackPane fx:id="musicBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#musicToggle" prefHeight="50.0" prefWidth="224.0">
+                        <children>
+                           <ImageView fitHeight="50.0" fitWidth="224.0">
+                              <image>
+                                 <Image url="@../../assets/btn_gray.png" />
+                              </image>
+                           </ImageView>
+                           <Label fx:id="musicLabel" alignment="CENTER" lineSpacing="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="224.0" text="MUSIC: ON" textAlignment="CENTER" textFill="WHITE" StackPane.alignment="CENTER">
+                              <font>
+                                 <Font size="36.0" />
+                              </font>
+                              <effect>
+                                 <DropShadow color="#393939" height="2.0" offsetX="2.0" offsetY="2.0" radius="0.5" width="2.0" />
+                              </effect>
+                              <StackPane.margin>
+                                 <Insets />
+                              </StackPane.margin>
+                           </Label>
+                        </children>
+                        <StackPane.margin>
+                           <Insets top="110.0" />
+                        </StackPane.margin>
+                     </StackPane>
+                  </children>
+               </StackPane>
+            </children>
+         </StackPane>
         </Scene>
     </scene>
 </Stage>

@@ -5,11 +5,13 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,9 +20,11 @@ public class GameManager {
     private final int OFFSET = 36;
     private final Pane gamePane;
     private final Pane nextMinoPane;
+    private final StackPane gameOverMenu;
     private final Label linesLabel;
     private final Label scoreLabel;
     private final Label levelLabel;
+    private final Label totalScoreLabel;
     private Shape currentMino;
     private Shape nextMino;
     private Shape fallPosMino;
@@ -30,11 +34,14 @@ public class GameManager {
     private final int FIELD_SIZE_Y = 20;
     private final boolean[][] field = new boolean[FIELD_SIZE_X][FIELD_SIZE_Y];
 
-    private final int startLevel = 1;
+    private int startLevel = 1;
     public int score = 0;
     private int lines = 0;
-    private int currentLevel = lines / 10 + startLevel;
+    private int currentLevel;
     private boolean gameIsRunning;
+    public  boolean paused = false;
+    public boolean soundOn = true;
+    public boolean musicOn = true;
 
     public boolean gameIsRunning() {
         return gameIsRunning;
@@ -42,13 +49,16 @@ public class GameManager {
 
     private AudioClip nowPlaying;
 
-    public GameManager(Pane gamePane, Pane nextMinoPane, Label linesLabel, Label scoreLabel, Label levelLabel) {
+    public GameManager(Pane gamePane, Pane nextMinoPane, StackPane gameOverMenu, Label totalScoreLabel, Label linesLabel, Label scoreLabel, Label levelLabel) {
         this.gamePane = gamePane;
         this.nextMinoPane = nextMinoPane;
+        this.gameOverMenu = gameOverMenu;
+        this.totalScoreLabel = totalScoreLabel;
         this.linesLabel = linesLabel;
         this.scoreLabel = scoreLabel;
         this.levelLabel = levelLabel;
-        start();
+        updateData();
+        //start();
     }
 
     public void start() {
@@ -106,6 +116,17 @@ public class GameManager {
         };
     }
 
+    public int changeStartLevel(){
+        if (startLevel == 1) {
+            startLevel = 5;
+        } else if (startLevel < 20) {
+            startLevel += 5;
+        } else {
+            startLevel = 1;
+        }
+        return startLevel;
+    }
+
     public boolean checkGameOver() {
         if (currentMino.a.getY() < 0) {
             return true;
@@ -137,10 +158,53 @@ public class GameManager {
         minoFall.cancel();
         removeFallPos();
         gameIsRunning = false;
-        Text gameOverText = new Text(100, 200, "GAME OVER");
-        gameOverText.setFill(Color.WHITE);
-        gameOverText.setFont(Font.font(25));
-        gamePane.getChildren().add(gameOverText);
+        totalScoreLabel.setText(Integer.toString(score));
+        gameOverMenu.setVisible(true);
+//        Text gameOverText = new Text(100, 200, "GAME OVER");
+//        gameOverText.setFill(Color.WHITE);
+//        gameOverText.setFont(Font.font(25));
+//        gamePane.getChildren().add(gameOverText);
+    }
+
+    public void resetGame(){
+        if(gameIsRunning){
+            stopThemeMusic();
+            minoFall.cancel();
+            removeFallPos();
+        }
+        gameIsRunning = false;
+        gamePane.getChildren().clear();
+        nextMinoPane.getChildren().clear();
+        for(int i = 0;i<field.length;i++){
+            Arrays.fill(field[i],false);
+        }
+        score = 0;
+        lines = 0;
+        updateData();
+    }
+
+    public void pauseGame(){
+        if(!paused){
+            stopThemeMusic();
+            minoFall.cancel();
+            for(int i = 0; i < gamePane.getChildren().size(); i++) {
+                gamePane.getChildren().get(i).setVisible(false);
+            }
+            for(int i = 0; i < nextMinoPane.getChildren().size(); i++) {
+                nextMinoPane.getChildren().get(i).setVisible(false);
+            }
+        } else {
+            playThemeMusic();
+            for(int i = 0; i < gamePane.getChildren().size(); i++) {
+                gamePane.getChildren().get(i).setVisible(true);
+            }
+            for(int i = 0; i < nextMinoPane.getChildren().size(); i++) {
+                nextMinoPane.getChildren().get(i).setVisible(true);
+            }
+            minoFall = new Timer();
+            minoFall.schedule(getFallingTask(), (int) (1000 * Math.pow(0.9, currentLevel) + 1), (int) (1000 * Math.pow(0.9, currentLevel) + 1));
+        }
+        paused = !paused;
     }
 
     private void initFallPos() {
@@ -397,13 +461,14 @@ public class GameManager {
     }
 
     public void updateData() {
+        currentLevel = lines / 10 + startLevel;
         linesLabel.setText(Integer.toString(lines));
         scoreLabel.setText(Integer.toString(score));
         levelLabel.setText(Integer.toString(currentLevel));
     }
 
     public void playThemeMusic() {
-        if (nowPlaying == null) {
+        if (nowPlaying == null&&musicOn) {
             nowPlaying = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/theme.mp3").toString());
             nowPlaying.setVolume(0.25);
             nowPlaying.setCycleCount(AudioClip.INDEFINITE);
@@ -412,43 +477,57 @@ public class GameManager {
     }
 
     public void stopThemeMusic() {
-        nowPlaying.stop();
-        nowPlaying = null;
+        if(musicOn) {
+            nowPlaying.stop();
+            nowPlaying = null;
+        }
     }
 
     public void playMoveSound() {
-        AudioClip moveSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/move.mp3").toString());
-        moveSound.setVolume(0.5);
-        moveSound.play();
+        if (soundOn) {
+            AudioClip moveSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/move.mp3").toString());
+            moveSound.setVolume(0.5);
+            moveSound.play();
+        }
     }
 
     public void playDropDownSound() {
-        AudioClip dropDownSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/dropDown.mp3").toString());
-        dropDownSound.setVolume(0.5);
-        dropDownSound.play();
+        if (soundOn) {
+            AudioClip dropDownSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/dropDown.mp3").toString());
+            dropDownSound.setVolume(0.5);
+            dropDownSound.play();
+        }
     }
 
     public void playLockSound() {
-        AudioClip lockSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/lock.mp3").toString());
-        lockSound.setVolume(0.5);
-        lockSound.play();
+        if (soundOn) {
+            AudioClip lockSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/lock.mp3").toString());
+            lockSound.setVolume(0.5);
+            lockSound.play();
+        }
     }
 
     public void playClearLinesSound() {
-        AudioClip clearLinesSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/clearLines.mp3").toString());
-        clearLinesSound.setVolume(0.5);
-        clearLinesSound.play();
+        if (soundOn) {
+            AudioClip clearLinesSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/clearLines.mp3").toString());
+            clearLinesSound.setVolume(0.5);
+            clearLinesSound.play();
+        }
     }
 
     public void playLevelUpSound() {
-        AudioClip levelUpSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/levelUp.mp3").toString());
-        levelUpSound.setVolume(0.5);
-        levelUpSound.play();
+        if (soundOn) {
+            AudioClip levelUpSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/levelUp.mp3").toString());
+            levelUpSound.setVolume(0.5);
+            levelUpSound.play();
+        }
     }
 
     public void playGameOverSound() {
-        AudioClip gameOverSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/gameOver.mp3").toString());
-        gameOverSound.setVolume(0.5);
-        gameOverSound.play();
+        if (soundOn) {
+            AudioClip gameOverSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/gameOver.mp3").toString());
+            gameOverSound.setVolume(0.5);
+            gameOverSound.play();
+        }
     }
 }
