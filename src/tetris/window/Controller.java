@@ -3,7 +3,6 @@ package tetris.window;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
@@ -46,11 +45,11 @@ public class Controller {
         startMenu.setVisible(true);
         gameOverMenu.setVisible(false);
         pauseMenu.setVisible(false);
-        gameManager = new GameManager(gamePane, nextMinoPane, gameOverMenu,totalScoreLabel, linesLabel, scoreLabel, levelLabel);
+        gameManager = new GameManager(gamePane, nextMinoPane, gameOverMenu, totalScoreLabel, linesLabel, scoreLabel, levelLabel);
         stage.setOnCloseRequest(event -> gameManager.stop());
 
         stage.getScene().setOnKeyPressed(event -> {
-            if (gameManager.gameIsRunning()&&!gameManager.paused) {
+            if (gameManager.gameIsRunning && !gameManager.paused) {
                 if (event.getCode() == KeyCode.LEFT) {
                     gameManager.moveLeft();
                 } else if (event.getCode() == KeyCode.RIGHT) {
@@ -65,65 +64,59 @@ public class Controller {
                 }
                 gameManager.updateData();
             }
-            if (gameManager.gameIsRunning()){
-                if(event.getCode() == KeyCode.ESCAPE){
+            if (gameManager.gameIsRunning) {
+                if (event.getCode() == KeyCode.ESCAPE) {
                     pause();
                 }
             }
         });
-        stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if(!newValue&&!gameManager.paused&&gameManager.gameIsRunning()){
+        stage.focusedProperty().addListener(observable -> {
+            if (!gameManager.paused && gameManager.gameIsRunning) {
                 pause();
             }
         });
-//        stage.requestFocus();
     }
 
     @FXML
-    void changeLevel(MouseEvent event) {
-        startLevelLabel.setText("LEVEL: "+Integer.toString(gameManager.changeStartLevel()));
+    void changeLevel() {
+        startLevelLabel.setText("LEVEL: " + gameManager.changeStartLevel());
         gameManager.updateData();
     }
 
     @FXML
-    void play(MouseEvent event) {
+    void play() {
         startMenu.setVisible(false);
         gameManager.updateData();
         gameManager.start();
 
     }
 
-
     @FXML
     void pause() {
-        if(!gameManager.paused){
-            pauseMenu.setVisible(true);
-        } else {
-            pauseMenu.setVisible(false);
-        }
+        pauseMenu.setVisible(!gameManager.paused);
         gameManager.pauseGame();
     }
 
     @FXML
-    void quit(MouseEvent event) {
+    void quit() {
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
     @FXML
-    void newGame(MouseEvent event) {
+    void newGame() {
         gameManager.resetGame();
         gameOverMenu.setVisible(false);
         startMenu.setVisible(true);
     }
 
     @FXML
-    void musicToggle(MouseEvent event) {
+    void musicToggle() {
         gameManager.musicOn = !gameManager.musicOn;
         musicLabel.setText(gameManager.musicOn ? "MUSIC: ON" : "MUSIC: OFF");
     }
 
     @FXML
-    void soundToggle(MouseEvent event) {
+    void soundToggle() {
         gameManager.soundOn = !gameManager.soundOn;
         soundLabel.setText(gameManager.soundOn ? "SOUND: ON" : "SOUND: OFF");
     }

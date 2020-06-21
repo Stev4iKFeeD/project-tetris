@@ -41,7 +41,7 @@ public class Shape {
     }
 
     public void resetPos() {
-        switch(MINOS[MINO_INDEX]) {
+        switch (MINOS[MINO_INDEX]) {
             case "I":
                 a.setX(0);
                 a.setY(0);
@@ -146,14 +146,14 @@ public class Shape {
         }
     }
 
-    public void moveX(int offset){
+    public void moveX(int offset) {
         a.setX(a.getX() + offset);
         b.setX(b.getX() + offset);
         c.setX(c.getX() + offset);
         d.setX(d.getX() + offset);
     }
 
-    public void moveY(int offset){
+    public void moveY(int offset) {
         a.setY(a.getY() + offset);
         b.setY(b.getY() + offset);
         c.setY(c.getY() + offset);
@@ -161,23 +161,23 @@ public class Shape {
     }
 
     public void rotate() {
-        switch(MINOS[MINO_INDEX]) {
+        switch (MINOS[MINO_INDEX]) {
             case "I":
-                if(rotationState == 0) {
+                if (rotationState == 0) {
                     a.setX(a.getX() + 2 * SIZE);
                     a.setY(a.getY() - SIZE);
                     b.setX(b.getX() + SIZE);
                     c.setY(c.getY() + SIZE);
                     d.setX(d.getX() - SIZE);
                     d.setY(d.getY() + 2 * SIZE);
-                } else if(rotationState == 1) {
+                } else if (rotationState == 1) {
                     a.setX(a.getX() + SIZE);
                     a.setY(a.getY() + 2 * SIZE);
                     b.setY(b.getY() + SIZE);
                     c.setX(c.getX() - SIZE);
                     d.setX(d.getX() - 2 * SIZE);
                     d.setY(d.getY() - SIZE);
-                } else if(rotationState == 2) {
+                } else if (rotationState == 2) {
                     a.setX(a.getX() - 2 * SIZE);
                     a.setY(a.getY() + SIZE);
                     b.setX(b.getX() - SIZE);
@@ -194,19 +194,19 @@ public class Shape {
                 }
                 break;
             case "J":
-                if(rotationState == 0) {
+                if (rotationState == 0) {
                     a.setX(a.getX() + 2 * SIZE);
                     b.setX(b.getX() + SIZE);
                     b.setY(b.getY() - SIZE);
                     d.setX(d.getX() - SIZE);
                     d.setY(d.getY() + SIZE);
-                } else if(rotationState == 1) {
+                } else if (rotationState == 1) {
                     a.setY(a.getY() + 2 * SIZE);
                     b.setX(b.getX() + SIZE);
                     b.setY(b.getY() + SIZE);
                     d.setX(d.getX() - SIZE);
                     d.setY(d.getY() - SIZE);
-                } else if(rotationState == 2) {
+                } else if (rotationState == 2) {
                     a.setX(a.getX() - 2 * SIZE);
                     b.setX(b.getX() - SIZE);
                     b.setY(b.getY() + SIZE);
@@ -221,19 +221,19 @@ public class Shape {
                 }
                 break;
             case "L":
-                if(rotationState == 0) {
+                if (rotationState == 0) {
                     a.setX(a.getX() + SIZE);
                     a.setY(a.getY() - SIZE);
                     c.setX(c.getX() - SIZE);
                     c.setY(c.getY() + SIZE);
                     d.setY(d.getY() + 2 * SIZE);
-                } else if(rotationState == 1) {
+                } else if (rotationState == 1) {
                     a.setX(a.getX() + SIZE);
                     a.setY(a.getY() + SIZE);
                     c.setX(c.getX() - SIZE);
                     c.setY(c.getY() - SIZE);
                     d.setX(d.getX() - 2 * SIZE);
-                } else if(rotationState == 2) {
+                } else if (rotationState == 2) {
                     a.setX(a.getX() - SIZE);
                     a.setY(a.getY() + SIZE);
                     c.setX(c.getX() + SIZE);
@@ -251,19 +251,19 @@ public class Shape {
                 /* O does not rotate */
                 break;
             case "S":
-                if(rotationState == 0) {
+                if (rotationState == 0) {
                     a.setX(a.getX() + SIZE);
                     a.setY(a.getY() - SIZE);
                     c.setX(c.getX() + SIZE);
                     c.setY(c.getY() + SIZE);
                     d.setY(d.getY() + 2 * SIZE);
-                } else if(rotationState == 1) {
+                } else if (rotationState == 1) {
                     a.setX(a.getX() + SIZE);
                     a.setY(a.getY() + SIZE);
                     c.setX(c.getX() - SIZE);
                     c.setY(c.getY() + SIZE);
                     d.setX(d.getX() - 2 * SIZE);
-                } else if(rotationState == 2) {
+                } else if (rotationState == 2) {
                     a.setX(a.getX() - SIZE);
                     a.setY(a.getY() + SIZE);
                     c.setX(c.getX() - SIZE);
@@ -278,21 +278,21 @@ public class Shape {
                 }
                 break;
             case "T":
-                if(rotationState == 0) {
+                if (rotationState == 0) {
                     a.setX(a.getX() + SIZE);
                     a.setY(a.getY() + SIZE);
                     b.setX(b.getX() + SIZE);
                     b.setY(b.getY() - SIZE);
                     d.setX(d.getX() - SIZE);
                     d.setY(d.getY() + SIZE);
-                } else if(rotationState == 1) {
+                } else if (rotationState == 1) {
                     a.setX(a.getX() - SIZE);
                     a.setY(a.getY() + SIZE);
                     b.setX(b.getX() + SIZE);
                     b.setY(b.getY() + SIZE);
                     d.setX(d.getX() - SIZE);
                     d.setY(d.getY() - SIZE);
-                } else if(rotationState == 2) {
+                } else if (rotationState == 2) {
                     a.setX(a.getX() - SIZE);
                     a.setY(a.getY() - SIZE);
                     b.setX(b.getX() - SIZE);
@@ -309,19 +309,19 @@ public class Shape {
                 }
                 break;
             case "Z":
-                if(rotationState == 0) {
+                if (rotationState == 0) {
                     a.setX(a.getX() + 2 * SIZE);
                     b.setX(b.getX() + SIZE);
                     b.setY(b.getY() + SIZE);
                     d.setX(d.getX() - SIZE);
                     d.setY(d.getY() + SIZE);
-                } else if(rotationState == 1) {
+                } else if (rotationState == 1) {
                     a.setY(a.getY() + 2 * SIZE);
                     b.setX(b.getX() - SIZE);
                     b.setY(b.getY() + SIZE);
                     d.setX(d.getX() - SIZE);
                     d.setY(d.getY() - SIZE);
-                } else if(rotationState == 2) {
+                } else if (rotationState == 2) {
                     a.setX(a.getX() - 2 * SIZE);
                     b.setX(b.getX() - SIZE);
                     b.setY(b.getY() - SIZE);
@@ -337,7 +337,7 @@ public class Shape {
                 break;
         }
 
-        if(rotationState < 3) {
+        if (rotationState < 3) {
             rotationState++;
         } else {
             rotationState = 0;

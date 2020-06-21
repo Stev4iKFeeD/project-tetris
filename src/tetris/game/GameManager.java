@@ -7,9 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 import java.util.Arrays;
 import java.util.Timer;
@@ -29,6 +26,7 @@ public class GameManager {
     private Shape nextMino;
     private Shape fallPosMino;
     private Timer minoFall;
+    private Timer updateCounter;
 
     private final int FIELD_SIZE_X = 10;
     private final int FIELD_SIZE_Y = 20;
@@ -38,14 +36,12 @@ public class GameManager {
     public int score = 0;
     private int lines = 0;
     private int currentLevel;
-    private boolean gameIsRunning;
-    public  boolean paused = false;
+    public boolean gameIsRunning;
+    public boolean paused = false;
     public boolean soundOn = true;
     public boolean musicOn = true;
 
-    public boolean gameIsRunning() {
-        return gameIsRunning;
-    }
+    private int lastUpdate;
 
     private AudioClip nowPlaying;
 
@@ -58,7 +54,6 @@ public class GameManager {
         this.scoreLabel = scoreLabel;
         this.levelLabel = levelLabel;
         updateData();
-        //start();
     }
 
     public void start() {
@@ -70,7 +65,9 @@ public class GameManager {
         initFallPos();
         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
         minoFall = new Timer();
-        minoFall.schedule(getFallingTask(), (int) (1000 * Math.pow(0.9, currentLevel) + 1), (int) (1000 * Math.pow(0.9, currentLevel) + 1));
+        updateCounter = new Timer();
+        minoFall.schedule(getFallingTask(), (int) (1111 * Math.pow(0.9, currentLevel) + 1), (int) (1111 * Math.pow(0.9, currentLevel) + 1));
+        updateCounter.schedule(getUpdateCounterTask(), 0, 1);
         gameIsRunning = true;
         updateData();
         playThemeMusic();
@@ -79,10 +76,11 @@ public class GameManager {
     public void stop() {
         if (minoFall != null) {
             minoFall.cancel();
+            updateCounter.cancel();
         }
     }
 
-    private TimerTask getFallingTask(){
+    private TimerTask getFallingTask() {
         return new TimerTask() {
             @Override
             public void run() {
@@ -91,6 +89,9 @@ public class GameManager {
                         playLockSound();
                         removeFallPos();
 
+                        if (checkGameOver()) {
+                            return;
+                        }
                         field[(int) currentMino.a.getX() / currentMino.SIZE][(int) currentMino.a.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.b.getX() / currentMino.SIZE][(int) currentMino.b.getY() / currentMino.SIZE] = true;
                         field[(int) currentMino.c.getX() / currentMino.SIZE][(int) currentMino.c.getY() / currentMino.SIZE] = true;
@@ -111,12 +112,22 @@ public class GameManager {
                         nextMinoPane.getChildren().addAll(nextMino.a, nextMino.b, nextMino.c, nextMino.d);
                         updateData();
                     }
+                    lastUpdate = 0;
                 });
             }
         };
     }
 
-    public int changeStartLevel(){
+    private TimerTask getUpdateCounterTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                lastUpdate++;
+            }
+        };
+    }
+
+    public int changeStartLevel() {
         if (startLevel == 1) {
             startLevel = 5;
         } else if (startLevel < 20) {
@@ -142,9 +153,9 @@ public class GameManager {
         }
 
         if (field[(int) currentMino.a.getX() / currentMino.SIZE][(int) currentMino.a.getY() / currentMino.SIZE] ||
-            field[(int) currentMino.b.getX() / currentMino.SIZE][(int) currentMino.b.getY() / currentMino.SIZE] ||
-            field[(int) currentMino.c.getX() / currentMino.SIZE][(int) currentMino.c.getY() / currentMino.SIZE] ||
-            field[(int) currentMino.d.getX() / currentMino.SIZE][(int) currentMino.d.getY() / currentMino.SIZE]) {
+                field[(int) currentMino.b.getX() / currentMino.SIZE][(int) currentMino.b.getY() / currentMino.SIZE] ||
+                field[(int) currentMino.c.getX() / currentMino.SIZE][(int) currentMino.c.getY() / currentMino.SIZE] ||
+                field[(int) currentMino.d.getX() / currentMino.SIZE][(int) currentMino.d.getY() / currentMino.SIZE]) {
             currentMino.moveY(-OFFSET);
             return checkGameOver();
         }
@@ -156,53 +167,47 @@ public class GameManager {
         stopThemeMusic();
         playGameOverSound();
         minoFall.cancel();
+        updateCounter.cancel();
         removeFallPos();
         gameIsRunning = false;
         totalScoreLabel.setText(Integer.toString(score));
         gameOverMenu.setVisible(true);
-//        Text gameOverText = new Text(100, 200, "GAME OVER");
-//        gameOverText.setFill(Color.WHITE);
-//        gameOverText.setFont(Font.font(25));
-//        gamePane.getChildren().add(gameOverText);
     }
 
-    public void resetGame(){
-        if(gameIsRunning){
+    public void resetGame() {
+        if (gameIsRunning) {
             stopThemeMusic();
             minoFall.cancel();
+            updateCounter.cancel();
             removeFallPos();
         }
         gameIsRunning = false;
         gamePane.getChildren().clear();
         nextMinoPane.getChildren().clear();
-        for(int i = 0;i<field.length;i++){
-            Arrays.fill(field[i],false);
+        for (boolean[] booleans : field) {
+            Arrays.fill(booleans, false);
         }
         score = 0;
         lines = 0;
         updateData();
     }
 
-    public void pauseGame(){
-        if(!paused){
+    public void pauseGame() {
+        if (!paused) {
             stopThemeMusic();
             minoFall.cancel();
-            for(int i = 0; i < gamePane.getChildren().size(); i++) {
-                gamePane.getChildren().get(i).setVisible(false);
-            }
-            for(int i = 0; i < nextMinoPane.getChildren().size(); i++) {
-                nextMinoPane.getChildren().get(i).setVisible(false);
-            }
+            updateCounter.cancel();
+            gamePane.setVisible(false);
+            nextMinoPane.setVisible(false);
         } else {
             playThemeMusic();
-            for(int i = 0; i < gamePane.getChildren().size(); i++) {
-                gamePane.getChildren().get(i).setVisible(true);
-            }
-            for(int i = 0; i < nextMinoPane.getChildren().size(); i++) {
-                nextMinoPane.getChildren().get(i).setVisible(true);
-            }
+            gamePane.setVisible(true);
+            nextMinoPane.setVisible(true);
             minoFall = new Timer();
-            minoFall.schedule(getFallingTask(), (int) (1000 * Math.pow(0.9, currentLevel) + 1), (int) (1000 * Math.pow(0.9, currentLevel) + 1));
+            updateCounter = new Timer();
+            minoFall.schedule(getFallingTask(), (int) (1111 * Math.pow(0.9, currentLevel) + 1) - lastUpdate,
+                    (int) (1111 * Math.pow(0.9, currentLevel) + 1));
+            updateCounter.schedule(getUpdateCounterTask(), 0, 1);
         }
         paused = !paused;
     }
@@ -247,14 +252,17 @@ public class GameManager {
     }
 
     public void dropDown() {
-       playDropDownSound();
+        playDropDownSound();
         while (moveDown(false)) {
             score += 2;
         }
         removeFallPos();
         minoFall.cancel();
+        updateCounter.cancel();
         minoFall = new Timer();
-        minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.9, currentLevel) + 1));
+        updateCounter = new Timer();
+        minoFall.schedule(getFallingTask(), 0, (int) (1111 * Math.pow(0.9, currentLevel) + 1));
+        updateCounter.schedule(getUpdateCounterTask(), 0, 1);
     }
 
     public boolean moveDown(boolean fromKeyboard) {
@@ -352,16 +360,16 @@ public class GameManager {
             return;
         }
 
-        if(field[(int) (rotateCheckMino.a.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.a.getY()) / rotateCheckMino.SIZE]) {
+        if (field[(int) (rotateCheckMino.a.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.a.getY()) / rotateCheckMino.SIZE]) {
             return;
         }
-        if(field[(int) (rotateCheckMino.b.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.b.getY()) / rotateCheckMino.SIZE]) {
+        if (field[(int) (rotateCheckMino.b.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.b.getY()) / rotateCheckMino.SIZE]) {
             return;
         }
-        if(field[(int) (rotateCheckMino.c.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.c.getY()) / rotateCheckMino.SIZE]) {
+        if (field[(int) (rotateCheckMino.c.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.c.getY()) / rotateCheckMino.SIZE]) {
             return;
         }
-        if(field[(int) (rotateCheckMino.d.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.d.getY()) / rotateCheckMino.SIZE]) {
+        if (field[(int) (rotateCheckMino.d.getX()) / rotateCheckMino.SIZE][(int) (rotateCheckMino.d.getY()) / rotateCheckMino.SIZE]) {
             return;
         }
 
@@ -448,8 +456,11 @@ public class GameManager {
             if (lines / 10 + startLevel > currentLevel) {
                 playLevelUpSound();
                 minoFall.cancel();
+                updateCounter.cancel();
                 minoFall = new Timer();
-                minoFall.schedule(getFallingTask(), 0, (int) (1000 * Math.pow(0.9, currentLevel) + 1));
+                updateCounter = new Timer();
+                minoFall.schedule(getFallingTask(), 0, (int) (1111 * Math.pow(0.9, currentLevel) + 1));
+                updateCounter.schedule(getUpdateCounterTask(), 0, 1);
                 currentLevel = lines / 10 + startLevel;
             }
 
@@ -468,7 +479,7 @@ public class GameManager {
     }
 
     public void playThemeMusic() {
-        if (nowPlaying == null&&musicOn) {
+        if (nowPlaying == null && musicOn) {
             nowPlaying = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/theme.mp3").toString());
             nowPlaying.setVolume(0.25);
             nowPlaying.setCycleCount(AudioClip.INDEFINITE);
@@ -477,7 +488,7 @@ public class GameManager {
     }
 
     public void stopThemeMusic() {
-        if(musicOn) {
+        if (nowPlaying != null && musicOn) {
             nowPlaying.stop();
             nowPlaying = null;
         }
