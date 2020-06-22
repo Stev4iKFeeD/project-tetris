@@ -3,13 +3,14 @@
 }
 
 #playBtn:hover, #levelBtn:hover, #quitBtn:hover, #quitBtn2:hover, #newGameBtn:hover, #resumeBtn:hover, #musicBtn:hover, #soundBtn:hover, #quitBtn3:hover, #pauseBtn:hover, #newGameBtn2:hover {
-    -fx-effect: dropshadow(gaussian, blue, 5, 0, 0, 0);
+    -fx-effect: innershadow(gaussian, white, 15, 0, 0, 0);
+    -fx-fill: rgba(255,255,255,0.5);
     -fx-font-size: 36px;
     -fx-cursor: hand;
 }
 
 #playBtn:pressed, #levelBtn:pressed, #quitBtn:pressed, #quitBtn2:pressed, #newGameBtn:pressed, #resumeBtn:pressed, #musicBtn:pressed, #soundBtn:pressed, #quitBtn3:pressed, #pauseBtn:pressed, #newGameBtn2:pressed {
-    -fx-effect: innershadow(gaussian, black, 5, 0, 0, 0);
+    -fx-effect: innershadow(gaussian, black, 15, 0, 0, 0);
     -fx-font-size: 36px;
     -fx-cursor: hand;
 }
