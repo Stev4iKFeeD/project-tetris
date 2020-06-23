@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tetris.game.GameManager;
 
+/**
+ * Window control class. Controls keystrokes, exit
+ */
 public class Controller {
     @FXML
     private Stage stage;
@@ -41,7 +44,7 @@ public class Controller {
     private GameManager gameManager;
 
     public void initialize() {
-        Font.loadFont(getClass().getClassLoader().getResourceAsStream("assets/fonts/RotondaC-Bold.ttf"), 36);
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("assets/fonts/RotondaC-Bold.ttf"), 36); // Register font for labels
         startMenu.setVisible(true);
         gameOverMenu.setVisible(false);
         pauseMenu.setVisible(false);
@@ -57,7 +60,6 @@ public class Controller {
                 } else if (event.getCode() == KeyCode.UP) {
                     gameManager.rotate();
                 } else if (event.getCode() == KeyCode.DOWN) {
-                    gameManager.score++;
                     gameManager.moveDown(true);
                 } else if (event.getCode() == KeyCode.SPACE) {
                     gameManager.dropDown();
@@ -70,12 +72,15 @@ public class Controller {
                 }
             }
         });
+        // Pause game when window loses focus
         stage.focusedProperty().addListener(observable -> {
             if (!gameManager.paused && gameManager.gameIsRunning) {
                 pause();
             }
         });
     }
+
+    // The following methods is used in buttons. For more details see tetris.fxml
 
     @FXML
     void changeLevel() {
@@ -88,7 +93,6 @@ public class Controller {
         startMenu.setVisible(false);
         gameManager.updateData();
         gameManager.start();
-
     }
 
     @FXML

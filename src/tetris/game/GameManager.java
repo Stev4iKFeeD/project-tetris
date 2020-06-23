@@ -25,15 +25,15 @@ public class GameManager {
     private Shape currentMino;
     private Shape nextMino;
     private Shape fallPosMino;
-    private Timer minoFall;
-    private Timer updateCounter;
+    private Timer minoFall; // Timer that moves currentMino down
+    private Timer updateCounter; // Timer that is used to return from pause menu correctly. It is needed to determine delay for mino falling after restarting minoFall timer
 
     private final int FIELD_SIZE_X = 10;
     private final int FIELD_SIZE_Y = 20;
-    private final boolean[][] field = new boolean[FIELD_SIZE_X][FIELD_SIZE_Y];
+    private final boolean[][] field = new boolean[FIELD_SIZE_X][FIELD_SIZE_Y]; // Game field is stored as 2-D boolean array
 
     private int startLevel = 1;
-    public int score = 0;
+    private int score = 0;
     private int lines = 0;
     private int currentLevel;
     public boolean gameIsRunning;
@@ -41,9 +41,9 @@ public class GameManager {
     public boolean soundOn = true;
     public boolean musicOn = true;
 
-    private int lastUpdate;
+    private int lastUpdate; // The time from the last run of minoFall timer
 
-    private AudioClip nowPlaying;
+    private AudioClip nowPlaying; // Theme music that is playing right now
 
     public GameManager(Pane gamePane, Pane nextMinoPane, StackPane gameOverMenu, Label totalScoreLabel, Label linesLabel, Label scoreLabel, Label levelLabel) {
         this.gamePane = gamePane;
@@ -56,6 +56,9 @@ public class GameManager {
         updateData();
     }
 
+    /**
+     * Start new game
+     */
     public void start() {
         nextMino = getNewMino();
         nextMino.initNextPos();
@@ -66,6 +69,7 @@ public class GameManager {
         gamePane.getChildren().addAll(currentMino.a, currentMino.b, currentMino.c, currentMino.d);
         minoFall = new Timer();
         updateCounter = new Timer();
+        // Formula used in delay and period of the minoFall timer is our own development
         minoFall.schedule(getFallingTask(), (int) (1111 * Math.pow(0.9, currentLevel) + 1), (int) (1111 * Math.pow(0.9, currentLevel) + 1));
         updateCounter.schedule(getUpdateCounterTask(), 0, 1);
         gameIsRunning = true;
@@ -73,6 +77,7 @@ public class GameManager {
         playThemeMusic();
     }
 
+    // Stop the game
     public void stop() {
         if (minoFall != null) {
             minoFall.cancel();
@@ -80,16 +85,20 @@ public class GameManager {
         }
     }
 
+    /**
+     * Task for mino falling
+     * @return new TimerTask of falling of currentMino
+     */
     private TimerTask getFallingTask() {
         return new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
+                Platform.runLater(() -> { // This is needed to avoid exception when making changes to window elements not from JavaFX Thread
                     if (!moveDown(false)) {
                         playLockSound();
                         removeFallPos();
 
-                        if (checkGameOver()) {
+                        if (checkGameOver()) { // This is needed to avoid exception on high levels
                             return;
                         }
                         field[(int) currentMino.a.getX() / currentMino.SIZE][(int) currentMino.a.getY() / currentMino.SIZE] = true;
@@ -118,6 +127,10 @@ public class GameManager {
         };
     }
 
+    /**
+     * The timer task that increases lastUpdate
+     * @return new TimerTask that increases lastUpdate
+     */
     private TimerTask getUpdateCounterTask() {
         return new TimerTask() {
             @Override
@@ -127,6 +140,10 @@ public class GameManager {
         };
     }
 
+    /**
+     * Changes start level according to the scheme: 1 -> 5 -> 10 -> 15 -> 20 -> 1 -> ...
+     * @return changed value of the start level
+     */
     public int changeStartLevel() {
         if (startLevel == 1) {
             startLevel = 5;
@@ -138,6 +155,10 @@ public class GameManager {
         return startLevel;
     }
 
+    /**
+     * Check whether it is the end of the game and no more minos can be spawned
+     * @return true - game is over; false - game is not over
+     */
     public boolean checkGameOver() {
         if (currentMino.a.getY() < 0) {
             return true;
@@ -163,6 +184,9 @@ public class GameManager {
         return false;
     }
 
+    /**
+     * Finish the game and show the end result
+     */
     public void gameOver() {
         stopThemeMusic();
         playGameOverSound();
@@ -174,6 +198,9 @@ public class GameManager {
         gameOverMenu.setVisible(true);
     }
 
+    /**
+     * Reset progress of the current game
+     */
     public void resetGame() {
         if (gameIsRunning) {
             stopThemeMusic();
@@ -192,9 +219,13 @@ public class GameManager {
         updateData();
     }
 
+    /**
+     * Toggle pause of the game
+     */
     public void pauseGame() {
         if (!paused) {
             stopThemeMusic();
+            // Stop timers
             minoFall.cancel();
             updateCounter.cancel();
             gamePane.setVisible(false);
@@ -203,6 +234,7 @@ public class GameManager {
             playThemeMusic();
             gamePane.setVisible(true);
             nextMinoPane.setVisible(true);
+            // Start timers again
             minoFall = new Timer();
             updateCounter = new Timer();
             minoFall.schedule(getFallingTask(), (int) (1111 * Math.pow(0.9, currentLevel) + 1) - lastUpdate,
@@ -212,6 +244,9 @@ public class GameManager {
         paused = !paused;
     }
 
+    /**
+     * Add ghostised copy of current mino on the gamePane and then update its position
+     */
     private void initFallPos() {
         fallPosMino = currentMino.copy();
         fallPosMino.ghostize();
@@ -220,6 +255,9 @@ public class GameManager {
         updateFallPos();
     }
 
+    /**
+     * Set position of fallPosMino to the position of current mino and move it down as far as possible
+     */
     private void updateFallPos() {
         fallPosMino.a.setX(currentMino.a.getX());
         fallPosMino.a.setY(currentMino.a.getY());
@@ -247,24 +285,37 @@ public class GameManager {
         }
     }
 
+    /**
+     * Remove ghostised copy of current mino from the gamePane
+     */
     private void removeFallPos() {
         gamePane.getChildren().removeAll(fallPosMino.a, fallPosMino.b, fallPosMino.c, fallPosMino.d);
     }
 
+    /**
+     * Move current mino down as far as possible and immediately spawn new mino
+     */
     public void dropDown() {
         playDropDownSound();
         while (moveDown(false)) {
             score += 2;
         }
         removeFallPos();
+        // Stop timers
         minoFall.cancel();
         updateCounter.cancel();
+        // Start timers again
         minoFall = new Timer();
         updateCounter = new Timer();
         minoFall.schedule(getFallingTask(), 0, (int) (1111 * Math.pow(0.9, currentLevel) + 1));
         updateCounter.schedule(getUpdateCounterTask(), 0, 1);
     }
 
+    /**
+     * Move current mino down one cell below
+     * @param fromKeyboard determine whether this method has been called by pressing key on keyboard (from Controller.java)
+     * @return true - move is complete; false - move cannot be completed
+     */
     public boolean moveDown(boolean fromKeyboard) {
         if (currentMino.a.getY() + OFFSET >= gamePane.getHeight() - 1 || field[(int) currentMino.a.getX() / currentMino.SIZE][(int) (currentMino.a.getY() + OFFSET) / currentMino.SIZE]) {
             return false;
@@ -281,11 +332,15 @@ public class GameManager {
 
         if (fromKeyboard) {
             playMoveSound();
+            score++;
         }
         currentMino.moveY(OFFSET);
         return true;
     }
 
+    /**
+     * Move current mino left
+     */
     public void moveLeft() {
         if (currentMino.a.getX() - OFFSET < 0 || field[(int) (currentMino.a.getX() - OFFSET) / currentMino.SIZE][(int) (currentMino.a.getY()) / currentMino.SIZE]) {
             return;
@@ -305,6 +360,9 @@ public class GameManager {
         updateFallPos();
     }
 
+    /**
+     * Move current mino right
+     */
     public void moveRight() {
         if (currentMino.a.getX() + OFFSET >= gamePane.getWidth() - 1 || field[(int) (currentMino.a.getX() + OFFSET) / currentMino.SIZE][(int) (currentMino.a.getY()) / currentMino.SIZE]) {
             return;
@@ -324,11 +382,15 @@ public class GameManager {
         updateFallPos();
     }
 
+    /**
+     * Rotate current mino
+     */
     public void rotate() {
+        // Checking for the possibility of rotation is achieved by copying current mino and checking if this mino overlaps the existing one
         Shape rotateCheckMino = currentMino.copy();
         rotateCheckMino.rotate();
 
-        // Left edge
+        // Left edge. Move right while mino is out bounds of gamePane
         while (rotateCheckMino.a.getX() < 0 ||
                 rotateCheckMino.b.getX() < 0 ||
                 rotateCheckMino.c.getX() < 0 ||
@@ -336,7 +398,7 @@ public class GameManager {
             rotateCheckMino.moveX(OFFSET);
         }
 
-        // Right edge
+        // Right edge. Move left while mino is out bounds of gamePane
         while (rotateCheckMino.a.getX() >= gamePane.getWidth() - 1 ||
                 rotateCheckMino.b.getX() >= gamePane.getWidth() - 1 ||
                 rotateCheckMino.c.getX() >= gamePane.getWidth() - 1 ||
@@ -344,7 +406,7 @@ public class GameManager {
             rotateCheckMino.moveX(-OFFSET);
         }
 
-        // Bottom edge
+        // Bottom edge. Move up while mino is out bounds of gamePane
         while (rotateCheckMino.a.getY() >= gamePane.getHeight() - 1 ||
                 rotateCheckMino.b.getY() >= gamePane.getHeight() - 1 ||
                 rotateCheckMino.c.getY() >= gamePane.getHeight() - 1 ||
@@ -386,12 +448,15 @@ public class GameManager {
         updateFallPos();
     }
 
+    /**
+     * Clear fully field rows
+     */
     private void clearLines() {
-        int cleared = 0;
+        int cleared = 0; // Number of cleared rows
         for (int i = 0; i < FIELD_SIZE_Y; i++) {
             boolean fullyFilled = true;
             for (int j = 0; j < FIELD_SIZE_X; j++) {
-                if (!field[j][i]) {
+                if (!field[j][i]) { // If there is at least one empty cell in a current row, stop checking this row
                     fullyFilled = false;
                     break;
                 }
@@ -401,6 +466,7 @@ public class GameManager {
             }
             cleared++;
 
+            // Deleting mino squares from the fulled row
             Node[] deletionNodes = new Node[10];
             int current = 0;
             for (Node node : gamePane.getChildren()) {
@@ -423,11 +489,13 @@ public class GameManager {
 //                gamePane.getChildren().remove(deletionNodes.get(0));
 //            }
 
+            // Clear the part of the field array that is above deleting row
             for (int k = 0; k <= i; k++) {
                 for (int l = 0; l < FIELD_SIZE_X; l++) {
                     field[l][k] = false;
                 }
             }
+            // Move squares, which are above deleting row, 1 cell down and refill the field array
             for (Node node : gamePane.getChildren()) {
                 ImageView mino = (ImageView) node;
                 if (mino.getY() < i * OFFSET) {
@@ -436,6 +504,7 @@ public class GameManager {
                 }
             }
         }
+
         if (cleared > 0) {
             playClearLinesSound();
             lines += cleared;
@@ -453,10 +522,12 @@ public class GameManager {
                     score += currentLevel * 800;
                     break;
             }
-            if (lines / 10 + startLevel > currentLevel) {
+            if (lines / 10 + startLevel > currentLevel) { // Increase level
                 playLevelUpSound();
+                // Stop timers
                 minoFall.cancel();
                 updateCounter.cancel();
+                // Start them again with new period
                 minoFall = new Timer();
                 updateCounter = new Timer();
                 minoFall.schedule(getFallingTask(), 0, (int) (1111 * Math.pow(0.9, currentLevel) + 1));
@@ -467,10 +538,15 @@ public class GameManager {
         }
     }
 
+    /**
+     * Random Shape
+     * @return new Shape of random type
+     */
     private Shape getNewMino() {
         return new Shape((int) (Math.random() * 7));
     }
 
+    // Updates data shown at the lower right corner (Lines, Score, Level)
     public void updateData() {
         currentLevel = lines / 10 + startLevel;
         linesLabel.setText(Integer.toString(lines));
@@ -510,6 +586,7 @@ public class GameManager {
         }
     }
 
+    // Sound that is played when mino falls down (new one spawns) and player cannot move it
     public void playLockSound() {
         if (soundOn) {
             AudioClip lockSound = new AudioClip(getClass().getClassLoader().getResource("assets/sounds/lock.mp3").toString());

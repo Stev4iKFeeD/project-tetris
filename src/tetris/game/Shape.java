@@ -3,9 +3,13 @@ package tetris.game;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * Mino class
+ */
 public class Shape {
-    private static final String[] MINOS = {"I", "J", "L", "O", "S", "T", "Z"};
+    private static final String[] MINOS = {"I", "J", "L", "O", "S", "T", "Z"}; // Reference array
 
+    // All minos consist of 4 small squares
     protected ImageView a;
     protected ImageView b;
     protected ImageView c;
@@ -15,7 +19,6 @@ public class Shape {
 
     public final int MINO_INDEX;
     public final int SIZE = 36;
-
 
     /**
      * @param minoIndex 0 - I; 1 - J; 2 - L; 3 - O; 4 - S; 5 - T; 6 - Z
@@ -36,10 +39,11 @@ public class Shape {
         d = new ImageView(minoImage);
         d.setFitWidth(SIZE);
         d.setFitHeight(SIZE);
-
-        resetPos();
     }
 
+    /**
+     * Set position of small squares relative to pos x = 0, y = 0
+     */
     public void resetPos() {
         switch (MINOS[MINO_INDEX]) {
             case "I":
@@ -115,9 +119,11 @@ public class Shape {
         }
     }
 
+    /**
+     * Move mino to the center of gamePane
+     */
     public void initPos() {
         resetPos();
-
         if (MINOS[MINO_INDEX].equals("O")) {
             moveX(4 * SIZE);
         } else if (MINOS[MINO_INDEX].equals("I")) {
@@ -128,6 +134,9 @@ public class Shape {
         }
     }
 
+    /**
+     * Move mino to the center of nextMinoPane
+     */
     public void initNextPos() {
         resetPos();
         switch (MINOS[MINO_INDEX]) {
@@ -146,6 +155,9 @@ public class Shape {
         }
     }
 
+    /**
+     * Move mino along the x axis
+     */
     public void moveX(int offset) {
         a.setX(a.getX() + offset);
         b.setX(b.getX() + offset);
@@ -153,6 +165,9 @@ public class Shape {
         d.setX(d.getX() + offset);
     }
 
+    /**
+     * Move mino along the y axis
+     */
     public void moveY(int offset) {
         a.setY(a.getY() + offset);
         b.setY(b.getY() + offset);
@@ -160,6 +175,9 @@ public class Shape {
         d.setY(d.getY() + offset);
     }
 
+    /**
+     * Move small squares as like mino is rotating
+     */
     public void rotate() {
         switch (MINOS[MINO_INDEX]) {
             case "I":
@@ -344,6 +362,10 @@ public class Shape {
         }
     }
 
+    /**
+     * Make full copy of current mino
+     * @return new Shape with exactly the same mino type, position and rotation
+     */
     public Shape copy() {
         Shape result = new Shape(MINO_INDEX);
         result.a.setX(a.getX());
@@ -358,6 +380,9 @@ public class Shape {
         return result;
     }
 
+    /**
+     * Turn mino into ghost mino. Used for displaying mino fall position
+     */
     public void ghostize() {
         Image minoImage = new Image("assets/minos/mino_ghost.png");
         a.setImage(minoImage);
